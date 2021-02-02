@@ -15,7 +15,7 @@ Whether you are dating, happily married, or just matched with someone on Tinder.
   - This app will allow the user to remove "favorite" results.
 
 ## Scope OUT
-  - 
+  - This app will not allow user submissions of date ideas.
 
 ## Minimum Viable Product
 MVP will incorporate 5 API's (recipe, movie, music, cocktail and TV show) to generate queried results to the user based on their genre specifications.  For example: an Italian recipe or a romantic comedy.
@@ -30,7 +30,8 @@ Stretch goals will incporate all 8 API's.  In addition to the 5 API's we would l
 
 ## Data Flow
 ![WRRC](images/date_night_modeling.jpeg)
+![ERD](images/erd.jpeg)
 
 ## Non-Functional Requirements
   - Usability: This app is intended to be very user friendly and keeps in mind the accessibility standards to make this app as inclusive as possible. 
-  - Compatibility: This app is compatible with Windows and Apple OS as well as in any standard browser. 
+  - Compatibility: This app is compatible with Windows and Apple OS as well as in any standard browser.
