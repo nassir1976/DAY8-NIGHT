@@ -20,17 +20,16 @@ MVP:
 As a user, I want to search through different categories of cuisine to find a nice date night meal to prepare.
 
 #Feature Tasks
-Search for a cuisine
-Save meal
-View Favorites
-Delete Favorites
+ - Search for a cuisine
+ - Save meal
+ - View Favorites
+ - Delete Favorites
 
 #Acceptance Tests
-GIVEN: When user searches by category
-THEN: The API displays recipe options
-WHEN: User clicks submit to save to favorites, it is shown in the database
-
-- Error message provided if something goes wrong when searching/saving/deleting
+ - GIVEN: When user searches by category
+ - THEN: The API displays recipe options
+ - WHEN: User clicks submit to save to favorites, it is shown in the database
+ + Error message provided if something goes wrong when searching/saving/deleting
 
 ##2. Create a Cocktail Finder
 As a user, I want to search through different categories of alcohol to find a nice date night beverage to prepare.
