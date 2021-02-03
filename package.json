@@ -1,0 +1,29 @@
+{
+  "name": "DAY8-NIGHT",
+  "version": "1.0.0",
+  "description": "We would like to build an app that will allow us to enjoy our date night by going through D8 Night app and selecting the categories that are important to us based on the selection that is given.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nassir1976/DAY8-NIGHT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nassir1976/DAY8-NIGHT/issues"
+  },
+  "homepage": "https://github.com/nassir1976/DAY8-NIGHT#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "method-override": "^3.0.0",
+    "pg": "^8.5.1",
+    "superagent": "^6.1.0"
+  }
+}
