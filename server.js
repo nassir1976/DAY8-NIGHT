@@ -6,7 +6,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const superagent = require('superagent');
-// const pg = require('pg');
+const pg = require('pg');
 
 
 // application setup
@@ -23,7 +23,7 @@ app.set('view engine', 'ejs'); //how you can tell you're using ejs at a quick gl
 app.use(express.static('./public'));
 
 // Database conection
-// const client = new pg.client(process.env.DATABASE_URL);// TAKE IN PATH OF DATABASE SERVER
+const client = new pg.Client(process.env.DATABASE_URL);// TAKE IN PATH OF DATABASE SERVER
 
 
 // create a default route
