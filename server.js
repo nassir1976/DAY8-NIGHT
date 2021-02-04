@@ -50,10 +50,10 @@ function cocktailHandler(req, res) {
   let url = 'https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Vodka';
 
   superagent.get(url)
-    .then( value => {
+    .then(value => {
       let drinkSearch = value.body.drinks;
       let cocktailIds = [];
-      drinkSearch.forEach( drink =>{
+      drinkSearch.forEach(drink => {
         let newdrink = new CocktailGenerator(drink);
         cocktailIds.push(newdrink);
       });
@@ -66,7 +66,7 @@ function cocktailHandler(req, res) {
 
 // function drinkDetails(req, res) {
 //   let url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita';
-  
+
 // }
 
 function CocktailGenerator(drink) {
@@ -111,6 +111,45 @@ function RecipeObject(data) {
   // this.ingredients = data.ingredients;
 
 }
+
+// -------------------  Spotify API  ----------------------//
+
+
+app.get('/SpotifyPlaylist', playlistHandler);
+
+
+const SpotifyWebAPI = require('spotify-web-api-node');
+// scopes = ['user-read-private'];
+const SpotifyClientID = process.env.SpotifyClientID;
+const SpotifySecretID = process.env.SpotifySecretID;
+// const redirectURL = process.env.redirectURL;
+const spotifyApi = new SpotifyWebAPI({ clientId: SpotifyClientID, clientSecret: SpotifySecretID });
+
+
+function playlistHandler(req, res) {
+  spotifyApi.authorizationCodeGrant()
+    // const { access_token, refresh_token} = data.body
+    .then(data => {
+      spotifyApi.setAccessToken(data.body['access_token']);
+      spotifyApi.searchPlaylists('Date Night', { limit: 3 })
+        .then(data => {
+          let playlists = data.body.playlists.items.map(playlist => new SpotifyPlaylist(playlist));
+          res.status(200).render('spotfy.ejs', { playlists });
+        })
+        .catch(err => errorHandler(req, res, err));
+    })
+    .catch(err => errorHandler(req, res, err));
+}
+
+function SpotifyPlaylist(playlist) {
+  this.description = playlist.description;
+  this.url = playlist.external_urls.spotify;
+  this.image = playlist.images[0].url;
+  this.name = playlist.name;
+  this.spotifyId = playlist.id;
+}
+
+
 
 
 app.use('*', (req, res) => {
