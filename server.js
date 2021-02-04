@@ -25,16 +25,36 @@ app.use(express.static('./public'));
 // Database conection
 const client = new pg.Client(process.env.DATABASE_URL);// TAKE IN PATH OF DATABASE SERVER
 
+
 const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
 
 
 
+
 // create a default route
-// app.get('/', homepage);
-// app.get('/new', searchPage);
+app.get('/shows', tvShowHandler);
+// app.get('/new', savedMovie);
 // app.get('/', favoritePage);
 
+
+<
+function tvShowHandler(req, res) {
+  const url = `https://api.tvmaze.com/search/shows?q=dogs`;
+  console.log(url);
+  superagent.get(url).then(Info => {
+    console.log('', Info.body);
+    const shows = Info.body;
+    console.log(shows);
+    const updatedInfo = shows.map(tvInfo => new TvShow(tvInfo));
+    res.send(updatedInfo);
+  }).catch(error => console.log(error));
+}
+function TvShow(data){
+  this.id = data.show.id;
+  this.title = data.show.title;
+  this.name = data.show.name;
+  this.url = data.show.url;
 
 // app.use('*', (req, res) => {
 //   res.status(404).send('Something is wrong');
@@ -74,6 +94,8 @@ function CocktailGenerator(drink) {
   this.drinkName = drink.strDrink;
   this.img = drink.strDrinkThumb;
 }
+
+
 
 
 
