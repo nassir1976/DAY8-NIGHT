@@ -93,6 +93,8 @@ function showSpotifySearch(req, res) {
   res.status(200).render('spotifySearch');
 }
 
+
+
 function cocktailHandler(req, res) {
   // let drinkType = request.query.drinkType;
   // let url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${drinkType}`;
@@ -119,40 +121,45 @@ function cocktailHandler(req, res) {
 
 // }
 
-// function CocktailGenerator(drink) {
-//   this.idDrink = drink.idDrink;
-//   this.drinkName = drink.strDrink;
-//   this.img = drink.strDrinkThumb;
-// }
+function CocktailGenerator(drink) {
+  this.idDrink = drink.idDrink;
+  this.drinkName = drink.strDrink;
+  this.img = drink.strDrinkThumb;
+}
 
 
 
 
-app.get('/recpie', findRecipe);
+
+
+
+
+app.get('/recipeResults', findRecipe);
+
+
+
 
 
 
 // Recipe Details using an id key
 
 function findRecipe(req, res) {
+  console.log(req);
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
-  // const url = 'https://api.spoonacular.com/recipes/716429/information';
-
-  // const searchQuery = req.query.searchType;
   superagent.get(url)
     .query({
       apiKey: RECIPE_API_KEY,
-      query: req.query.query,
-      number: 30,
+      cuisine: req.query.keyword,
+      number: 10,
       instructionsRequired: true
     })
     .then(detailsIfo => {
-      console.log('=========', detailsIfo.body);
+      // console.log('=========', detailsIfo.body);
 
       const recipeObj = detailsIfo.body.results;
       const recipeData = recipeObj.map(detailsIfo => new RecipeObject(detailsIfo));
       // res.status(200).send(recipeData);
-      res.render('./recpie', { recipe: recipeData });
+      res.render('./recipeResults', { recipe: recipeData });
 
     }).catch(error => console.error(error));
 }

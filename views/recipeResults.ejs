@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./styles/reset.css">
+  <link rel="stylesheet" href="./styles/base.css" >
+  <link rel="stylesheet" href="./styles/layouts.css" >
+  <link rel="stylesheet" href="./styles/modules.css"> 
+  
+
+  <title>final project</title>
+</head>
+<nav>
+  <a href='/favorites'> FAVORITES</a>
+  
+
+
+</nav>
+<body>
+  <header>
+<h1 > RECIPE LIST   </h1>
+</header>
+
+
+
+<section id="main-contain">
+  <ul class="recpie">
+<%recipe.forEach(results=>{%>
+     <div class="result-container">
+          <img class="recipe-image" src="<%=results.image%>" alt="<%=results.title%>">
+          <h3 id="recipe-title"><%=results.title%></h3>
+          <h4 id="recipe-id"><%=results.id%></h4>
+          <p id="recipe-ingre"><%=results.ingredients%></p>
+          <p id="recipe-cuisines"><%=results.cuisines%></p>
+      </div>
+      <form action = "/faforite" method="post">
+        <input type="hidden" name="image" value="<%= results.image%>">
+        <input type="hidden" name="title" value="<%= results.title%>">
+        <input type="hidden" name="id" value="<%= results.id%>">
+        <input type="hidden" name="ingredients" value="<%= results.ingredients%>">
+        <input type="hidden" name="cusines" value="<%= results.cusines%>">
+        <button class="button-black" type="submit">add to Database</button>
+        </form>
+        
+    <% }) %>
+    
+   
+
+    </body>
+
+</html>
