@@ -44,7 +44,9 @@ function homeHandler (req, res) {
 
 
 function tvShowHandler(req, res) {
-  const url = `https://api.tvmaze.com/search/shows?q=dogs`;
+  const searchterm = req.query.keyword;
+  console.log(searchterm);
+  const url = `https://api.tvmaze.com/search/shows?q=${searchterm}`;
   console.log(url);
   superagent.get(url).then(Info => {
     console.log('', Info.body);
