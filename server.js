@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const superagent = require('superagent');
 const pg = require('pg');
+const { render } = require('ejs');
 
 
 // application setup
@@ -33,9 +34,12 @@ const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
 
 // create a default route
-app.get('/shows', tvShowHandler);
-// app.get('/new', savedMovie);
-// app.get('/', favoritePage);
+// app.get('/shows', tvShowHandler);
+app.get('/', homeHandler);
+
+function homeHandler (req, res) {
+  res.status(200).render('index');
+}
 
 
 
@@ -64,8 +68,31 @@ function TvShow(data){
 // });
 
 // ---------------- COCKTAILS API ------------------------
+
+
 app.get('/', cocktailHandler);
 // app.get('showDrinks', drinkDetails);
+app.get('/cocktailResults', cocktailHandler);
+app.get('/cocktailSearch', showCocktailSearch);
+app.get('/tvshowSearch', showTvShowSearch);
+app.get('/recipeSearch', showRecipeSearch);
+app.get('/spotifySearch', showSpotifySearch)
+
+function showTvShowSearch(req, res){
+  res.status(200).render('tvshowSearch');
+}
+
+function showCocktailSearch(req, res){
+  res.status(200).render('cocktailSearch');
+}
+
+function showRecipeSearch(req, res){
+  res.status(200).render('recipeSearch');
+}
+
+function showSpotifySearch(req, res){
+  res.status(200).render('spotifySearch');
+}
 
 function cocktailHandler(req, res) {
   // let drinkType = request.query.drinkType;
@@ -73,57 +100,60 @@ function cocktailHandler(req, res) {
   let url = 'https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Vodka';
 
   superagent.get(url)
-    .then( value => {
+    .then(value => {
       let drinkSearch = value.body.drinks;
       let cocktailIds = [];
-      drinkSearch.forEach( drink =>{
+      drinkSearch.forEach(drink => {
         let newdrink = new CocktailGenerator(drink);
         cocktailIds.push(newdrink);
       });
-      res.status(200).send(cocktailIds);
+      res.status(200).render('cocktailResults', {data: cocktailIds});
     })
     .catch(err => {
       console.log(err);
     });
 }
 
+
 // function drinkDetails(req, res) {
 //   let url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita';
-  
+
 // }
 
-function CocktailGenerator(drink) {
-  this.idDrink = drink.idDrink;
-  this.drinkName = drink.strDrink;
-  this.img = drink.strDrinkThumb;
-}
+// function CocktailGenerator(drink) {
+//   this.idDrink = drink.idDrink;
+//   this.drinkName = drink.strDrink;
+//   this.img = drink.strDrinkThumb;
+// }
 
 
 
 
+app.get('/recpie', findRecipe);
 
-app.get('/results', findRecipe);
 
 
 // Recipe Details using an id key
 
-
-
 function findRecipe(req, res) {
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
+  // const url = 'https://api.spoonacular.com/recipes/716429/information';
+
+  // const searchQuery = req.query.searchType;
   superagent.get(url)
     .query({
       apiKey: RECIPE_API_KEY,
       query: req.query.query,
-      number: 5,
+      number: 30,
       instructionsRequired: true
     })
     .then(detailsIfo => {
       console.log('=========', detailsIfo.body);
+
       const recipeObj = detailsIfo.body.results;
-      const recipeData = recipeObj.map(recipeToShow => new RecipeObject(recipeToShow));
-      console.log(recipeData);
-      res.render('/results', { recipe: recipeData });
+      const recipeData = recipeObj.map(detailsIfo => new RecipeObject(detailsIfo));
+      // res.status(200).send(recipeData);
+      res.render('./recpie', { recipe: recipeData });
 
     }).catch(error => console.error(error));
 }
@@ -133,8 +163,46 @@ function RecipeObject(data) {
   this.title = data.title;
   this.id = data.id;
   this.image = data.image;
-  // this.ingredients = data.ingredients;
+  this.ingredients = data.ingredients;
+  this.cuisines = data.cuisines;
 
+}
+
+// -------------------  Spotify API  ----------------------//
+
+
+app.get('/SpotifyPlaylist', playlistHandler);
+
+
+const SpotifyWebAPI = require('spotify-web-api-node');
+// scopes = ['user-read-private'];
+const SpotifyClientID = process.env.SpotifyClientID;
+const SpotifySecretID = process.env.SpotifySecretID;
+// const redirectURL = process.env.redirectURL;
+const spotifyApi = new SpotifyWebAPI({ clientId: SpotifyClientID, clientSecret: SpotifySecretID });
+
+
+function playlistHandler(req, res) {
+  spotifyApi.authorizationCodeGrant()
+    // const { access_token, refresh_token} = data.body
+    .then(data => {
+      spotifyApi.setAccessToken(data.body['access_token']);
+      spotifyApi.searchPlaylists('Date Night', { limit: 3 })
+        .then(data => {
+          let playlists = data.body.playlists.items.map(playlist => new SpotifyPlaylist(playlist));
+          res.status(200).render('spotfy.ejs', { playlists });
+        })
+        .catch(err => errorHandler(req, res, err));
+    })
+    .catch(err => errorHandler(req, res, err));
+}
+
+function SpotifyPlaylist(playlist) {
+  this.description = playlist.description;
+  this.url = playlist.external_urls.spotify;
+  this.image = playlist.images[0].url;
+  this.name = playlist.name;
+  this.spotifyId = playlist.id;
 }
 
 
@@ -149,6 +217,3 @@ client.connect()
       console.log(`now listening on port ${PORT}`);
     });
   }).catch(error => console.error(error));
-
-
-
