@@ -65,6 +65,11 @@ function TvShow(data){
 // });
 
 // ---------------- COCKTAILS API ------------------------
+
+
+app.get('/', cocktailHandler);
+// app.get('showDrinks', drinkDetails);
+=======
 app.get('/cocktailResults', cocktailHandler);
 app.get('/cocktailSearch', showCocktailSearch);
 app.get('/tvshowSearch', showTvShowSearch);
@@ -107,36 +112,49 @@ function cocktailHandler(req, res) {
     });
 }
 
+
 // function drinkDetails(req, res) {
 //   let url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita';
 
 // }
 
-function CocktailGenerator(drink) {
-  this.idDrink = drink.idDrink;
-  this.drinkName = drink.strDrink;
-  this.img = drink.strDrinkThumb;
-}
+// function CocktailGenerator(drink) {
+//   this.idDrink = drink.idDrink;
+//   this.drinkName = drink.strDrink;
+//   this.img = drink.strDrinkThumb;
+// }
 
-app.get('/results', findRecipe);
+
+
+
+app.get('/recpie', findRecipe);
+=======
+
+
+
+
 
 // Recipe Details using an id key
 
 function findRecipe(req, res) {
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
+  // const url = 'https://api.spoonacular.com/recipes/716429/information';
+
+  // const searchQuery = req.query.searchType;
   superagent.get(url)
     .query({
       apiKey: RECIPE_API_KEY,
       query: req.query.query,
-      number: 5,
+      number: 30,
       instructionsRequired: true
     })
     .then(detailsIfo => {
       console.log('=========', detailsIfo.body);
+
       const recipeObj = detailsIfo.body.results;
-      const recipeData = recipeObj.map(recipeToShow => new RecipeObject(recipeToShow));
-      console.log(recipeData);
-      res.render('/results', { recipe: recipeData });
+      const recipeData = recipeObj.map(detailsIfo => new RecipeObject(detailsIfo));
+      // res.status(200).send(recipeData);
+      res.render('./recpie', { recipe: recipeData });
 
     }).catch(error => console.error(error));
 }
@@ -146,7 +164,8 @@ function RecipeObject(data) {
   this.title = data.title;
   this.id = data.id;
   this.image = data.image;
-  // this.ingredients = data.ingredients;
+  this.ingredients = data.ingredients;
+  this.cuisines = data.cuisines;
 
 }
 
