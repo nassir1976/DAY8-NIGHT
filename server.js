@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const superagent = require('superagent');
 const pg = require('pg');
+const { log } = require('console');
 const { render } = require('ejs');
 
 
@@ -88,12 +89,13 @@ function showSpotifySearch(req, res){
 }
 
 function cocktailHandler(req, res) {
-  // let drinkType = request.query.drinkType;
-  // let url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${drinkType}`;
-  let url = 'https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Vodka';
+  console.log('req.qery...', req.query);
+  let drinkType = req.query.keyword;
+  let url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${drinkType}`;
 
   superagent.get(url)
     .then(value => {
+      console.log(value);
       let drinkSearch = value.body.drinks;
       let cocktailIds = [];
       drinkSearch.forEach(drink => {
@@ -106,11 +108,6 @@ function cocktailHandler(req, res) {
       console.log(err);
     });
 }
-
-// function drinkDetails(req, res) {
-//   let url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita';
-
-// }
 
 function CocktailGenerator(drink) {
   this.idDrink = drink.idDrink;
