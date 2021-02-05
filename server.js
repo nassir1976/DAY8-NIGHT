@@ -40,20 +40,18 @@ function tvShowHandler(req, res) {
     const shows = Info.body;
     console.log(shows);
     const updatedInfo = shows.map(tvInfo => new TvShow(tvInfo));
-    res.send(updatedInfo);
+    // res.send(updatedInfo);
+    res.render('tvshow.ejs', {values: updatedInfo});
   }).catch(error => console.log(error));
 }
 function TvShow(data){
   this.id = data.show.id;
-  this.title = data.show.title;
+  this.summary = data.show.summary;
   this.name = data.show.name;
   this.url = data.show.url;
+  this.image = data.show.image ? data.show.image.original : " ";
+  console.log(data);
 }
-
-
-
-
-
 
 
 
