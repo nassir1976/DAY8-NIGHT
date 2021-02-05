@@ -35,12 +35,13 @@ const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
 
 // create a default route
-// app.get('/shows', tvShowHandler);
+app.get('/shows', tvShowHandler);
 app.get('/', homeHandler);
 
-function homeHandler (req, res) {
+function homeHandler(req, res) {
   res.status(200).render('index');
 }
+
 
 
 function tvShowHandler(req, res) {
@@ -51,40 +52,45 @@ function tvShowHandler(req, res) {
     const shows = Info.body;
     console.log(shows);
     const updatedInfo = shows.map(tvInfo => new TvShow(tvInfo));
-    res.send(updatedInfo);
+    // res.send(updatedInfo);
+    res.render('tvshow.ejs', { values: updatedInfo });
   }).catch(error => console.log(error));
 }
-function TvShow(data){
+function TvShow(data) {
   this.id = data.show.id;
-  this.title = data.show.title;
+  this.summary = data.show.summary;
   this.name = data.show.name;
   this.url = data.show.url;
+  this.image = data.show.image ? data.show.image.original : " ";
+  console.log(data);
 }
-
 // app.use('*', (req, res) => {
 //   res.status(404).send('Something is wrong');
 // });
 
 // ---------------- COCKTAILS API ------------------------
+
+
+app.get('/', cocktailHandler);
+// app.get('showDrinks', drinkDetails);
 app.get('/cocktailResults', cocktailHandler);
 app.get('/cocktailSearch', showCocktailSearch);
 app.get('/tvshowSearch', showTvShowSearch);
 app.get('/recipeSearch', showRecipeSearch);
-app.get('/spotifySearch', showSpotifySearch)
 
-function showTvShowSearch(req, res){
+function showTvShowSearch(req, res) {
   res.status(200).render('tvshowSearch');
 }
 
-function showCocktailSearch(req, res){
+function showCocktailSearch(req, res) {
   res.status(200).render('cocktailSearch');
 }
 
-function showRecipeSearch(req, res){
+function showRecipeSearch(req, res) {
   res.status(200).render('recipeSearch');
 }
 
-function showSpotifySearch(req, res){
+function showSpotifySearch(req, res) {
   res.status(200).render('spotifySearch');
 }
 
@@ -102,7 +108,7 @@ function cocktailHandler(req, res) {
         let newdrink = new CocktailGenerator(drink);
         cocktailIds.push(newdrink);
       });
-      res.status(200).render('cocktailResults', {data: cocktailIds});
+      res.status(200).render('cocktailResults', { data: cocktailIds });
     })
     .catch(err => {
       console.log(err);
@@ -115,25 +121,47 @@ function CocktailGenerator(drink) {
   this.img = drink.strDrinkThumb;
 }
 
-app.get('/results', findRecipe);
+
+// function drinkDetails(req, res) {
+//   let url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita';
+
+// }
+
+// function CocktailGenerator(drink) {
+//   this.idDrink = drink.idDrink;
+//   this.drinkName = drink.strDrink;
+//   this.img = drink.strDrinkThumb;
+// }
+
+
+
+
+app.get('/recpie', findRecipe);
+
+
+
 
 // Recipe Details using an id key
 
 function findRecipe(req, res) {
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
+  // const url = 'https://api.spoonacular.com/recipes/716429/information';
+
+  // const searchQuery = req.query.searchType;
   superagent.get(url)
     .query({
       apiKey: RECIPE_API_KEY,
       query: req.query.query,
-      number: 5,
+      number: 30,
       instructionsRequired: true
     })
     .then(detailsIfo => {
       console.log('=========', detailsIfo.body);
+
       const recipeObj = detailsIfo.body.results;
-      const recipeData = recipeObj.map(recipeToShow => new RecipeObject(recipeToShow));
-      console.log(recipeData);
-      res.render('/results', { recipe: recipeData });
+      const recipeData = recipeObj.map(detailsIfo => new RecipeObject(detailsIfo));
+      // res.status(200).send(recipeData);
+      res.render('./recpie', { recipe: recipeData });
 
     }).catch(error => console.error(error));
 }
@@ -143,7 +171,8 @@ function RecipeObject(data) {
   this.title = data.title;
   this.id = data.id;
   this.image = data.image;
-  // this.ingredients = data.ingredients;
+  this.ingredients = data.ingredients;
+  this.cuisines = data.cuisines;
 
 }
 
@@ -151,7 +180,8 @@ function RecipeObject(data) {
 
 
 app.get('/SpotifyPlaylist', playlistHandler);
-
+app.get('/spotifySearch', showSpotifySearch);
+app.post('/spotifySearch', searchPlaylistHandler);
 
 const SpotifyWebAPI = require('spotify-web-api-node');
 // scopes = ['user-read-private'];
@@ -159,6 +189,19 @@ const SpotifyClientID = process.env.SpotifyClientID;
 const SpotifySecretID = process.env.SpotifySecretID;
 // const redirectURL = process.env.redirectURL;
 const spotifyApi = new SpotifyWebAPI({ clientId: SpotifyClientID, clientSecret: SpotifySecretID });
+
+function searchPlaylistHandler(req, res) {
+  let search = req.body.query;
+  spotifyApi.authorizationCodeGrant()
+    .then(data => {
+      spotifyApi.setAccessToken(data.body['access token']);
+      spotifyApi.searchPlaylists(search, { limit: 5 })
+        .then(data => {
+          let playlists = data.body.playlists.items.map(playlist => new SpotifyPlaylist(playlist));
+          res.status(200).render('pages/playlist', { playlists });
+        });
+    });
+}
 
 
 function playlistHandler(req, res) {
@@ -169,7 +212,7 @@ function playlistHandler(req, res) {
       spotifyApi.searchPlaylists('Date Night', { limit: 3 })
         .then(data => {
           let playlists = data.body.playlists.items.map(playlist => new SpotifyPlaylist(playlist));
-          res.status(200).render('spotfy.ejs', { playlists });
+          res.status(200).render('spotifySearch.ejs', { playlists });
         })
         .catch(err => errorHandler(req, res, err));
     })
@@ -185,9 +228,11 @@ function SpotifyPlaylist(playlist) {
 }
 
 
-app.use('*', (req, res) => {
-  res.status(404).send('Something is wrong');
-});
+function errorHandler(req, res, err) { res.status(500).send(`Error: ${err}`); }
+
+// app.use('*', (req, res) => {
+//   res.status(404).send('Something is wrong');
+// });
 
 
 client.connect()
