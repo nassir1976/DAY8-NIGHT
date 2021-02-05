@@ -34,12 +34,13 @@ const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
 
 // create a default route
-// app.get('/shows', tvShowHandler);
+app.get('/shows', tvShowHandler);
 app.get('/', homeHandler);
 
 function homeHandler (req, res) {
   res.status(200).render('index');
 }
+
 
 
 function tvShowHandler(req, res) {
@@ -50,16 +51,18 @@ function tvShowHandler(req, res) {
     const shows = Info.body;
     console.log(shows);
     const updatedInfo = shows.map(tvInfo => new TvShow(tvInfo));
-    res.send(updatedInfo);
+    // res.send(updatedInfo);
+    res.render('tvshow.ejs', {values: updatedInfo});
   }).catch(error => console.log(error));
 }
 function TvShow(data){
   this.id = data.show.id;
-  this.title = data.show.title;
+  this.summary = data.show.summary;
   this.name = data.show.name;
   this.url = data.show.url;
+  this.image = data.show.image ? data.show.image.original : " ";
+  console.log(data);
 }
-
 // app.use('*', (req, res) => {
 //   res.status(404).send('Something is wrong');
 // });
@@ -69,7 +72,6 @@ function TvShow(data){
 
 app.get('/', cocktailHandler);
 // app.get('showDrinks', drinkDetails);
-=======
 app.get('/cocktailResults', cocktailHandler);
 app.get('/cocktailSearch', showCocktailSearch);
 app.get('/tvshowSearch', showTvShowSearch);
@@ -128,9 +130,6 @@ function cocktailHandler(req, res) {
 
 
 app.get('/recpie', findRecipe);
-=======
-
-
 
 
 
