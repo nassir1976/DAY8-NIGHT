@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const superagent = require('superagent');
 const pg = require('pg');
+const { render } = require('ejs');
 
 
 // application setup
@@ -33,12 +34,14 @@ const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
 
 // create a default route
-app.get('/shows', tvShowHandler);
-// app.get('/new', savedMovie);
-// app.get('/', favoritePage);
+// app.get('/shows', tvShowHandler);
+app.get('/', homeHandler);
+
+function homeHandler (req, res) {
+  res.status(200).render('index');
+}
 
 
-<
 function tvShowHandler(req, res) {
   const url = `https://api.tvmaze.com/search/shows?q=dogs`;
   console.log(url);
@@ -55,14 +58,34 @@ function TvShow(data){
   this.title = data.show.title;
   this.name = data.show.name;
   this.url = data.show.url;
+}
 
 // app.use('*', (req, res) => {
 //   res.status(404).send('Something is wrong');
 // });
 
 // ---------------- COCKTAILS API ------------------------
-app.get('/', cocktailHandler);
-// app.get('showDrinks', drinkDetails);
+app.get('/cocktailResults', cocktailHandler);
+app.get('/cocktailSearch', showCocktailSearch);
+app.get('/tvshowSearch', showTvShowSearch);
+app.get('/recipeSearch', showRecipeSearch);
+app.get('/spotifySearch', showSpotifySearch)
+
+function showTvShowSearch(req, res){
+  res.status(200).render('tvshowSearch');
+}
+
+function showCocktailSearch(req, res){
+  res.status(200).render('cocktailSearch');
+}
+
+function showRecipeSearch(req, res){
+  res.status(200).render('recipeSearch');
+}
+
+function showSpotifySearch(req, res){
+  res.status(200).render('spotifySearch');
+}
 
 function cocktailHandler(req, res) {
   // let drinkType = request.query.drinkType;
@@ -77,7 +100,7 @@ function cocktailHandler(req, res) {
         let newdrink = new CocktailGenerator(drink);
         cocktailIds.push(newdrink);
       });
-      res.status(200).send(cocktailIds);
+      res.status(200).render('cocktailResults', {data: cocktailIds});
     })
     .catch(err => {
       console.log(err);
@@ -95,16 +118,9 @@ function CocktailGenerator(drink) {
   this.img = drink.strDrinkThumb;
 }
 
-
-
-
-
 app.get('/results', findRecipe);
 
-
 // Recipe Details using an id key
-
-
 
 function findRecipe(req, res) {
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
@@ -172,8 +188,6 @@ function SpotifyPlaylist(playlist) {
 }
 
 
-
-
 app.use('*', (req, res) => {
   res.status(404).send('Something is wrong');
 });
@@ -185,6 +199,3 @@ client.connect()
       console.log(`now listening on port ${PORT}`);
     });
   }).catch(error => console.error(error));
-
-
-

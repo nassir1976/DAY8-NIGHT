@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cocktail Search Display</title>
+
+  </head>
+  <body>
+    <section id= "drinkResults">
+      <% data.forEach(value => { %>
+      <h2 id="drinkName"><%= value.drinkName %></h2>
+      <img id="img" src="<%= value.img %>"></img>
+      <li hidden id="idDrink"><%= value.idDrink %></li>
+    <% }) %>
+        <div id="save-button">
+          
+        </div>
+    </section>
+  
+  </body>
+</html>
