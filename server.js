@@ -34,7 +34,7 @@ const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
 
 // create a default route
-// app.get('/shows', tvShowHandler);
+app.get('/shows', tvShowHandler);
 app.get('/', homeHandler);
 
 function homeHandler (req, res) {
