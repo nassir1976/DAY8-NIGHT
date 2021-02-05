@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS spotify
+
+CREATE TABLE spotif(
+  id SERIAL PRIMARY KEY,
+  game
+)
