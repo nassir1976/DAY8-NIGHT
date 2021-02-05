@@ -54,8 +54,6 @@ function TvShow(data){
 }
 
 
-
-
 app.use('*', (req, res) => {
   res.status(404).send('Something is wrong');
 });
