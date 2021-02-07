@@ -1,6 +1,6 @@
 'use strict';
 
-//bring in dependencies 
+//bring in dependencies
 require('dotenv').config();
 
 const express = require('express');
@@ -15,7 +15,6 @@ const methodOverride = require('method-override');
 
 // const { log } = require('console');
 // const { render } = require('ejs');
-
 
 
 // application setup
@@ -44,7 +43,9 @@ const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 app.get('/shows', tvShowHandler);
 app.get('/', homeHandler);
 
-function homeHandler(req, res) {
+async function homeHandler(req, res) {   // eslint-disable-line
+  let playlist = await getMyData();
+  console.log({playlist});
   res.status(200).render('index');
 }
 
@@ -97,9 +98,9 @@ function showRecipeSearch(req, res) {
   res.status(200).render('recipeSearch');
 }
 
-function showSpotifySearch(req, res) {
-  res.status(200).render('spotifySearch');
-}
+// function showSpotifySearch(req, res) {
+//   res.status(200).render('spotifySearch');
+// }
 
 // ---------------- COCKTAILS API ------------------------
 
@@ -217,64 +218,69 @@ function RecipeObject(data) {
 
 }
 
-// -------------------  Spotify API  ----------------------//
+// -------------------------- Spotify API ---------------------------- //
 
 
-app.get('/SpotifyPlaylist', playlistHandler);
-app.get('/spotifySearch', showSpotifySearch);
-app.post('/spotifySearch', searchPlaylistHandler);
+const fs = require('fs')
+const SpotifyWebApi = require('spotify-web-api-node');
+const token = "BQDfYegFO-BX9vYP0I-nGEfdjUr1NI57GvDrNI-npeKjKejJAMFO2etyT_ItUpNXhxff7w6V32IcsAkgesDfExxwTIVacPR18vYZehdcnkHpVXkS5mcRgOTOcq8eGcg6LYOWUsj0bciRL8LfGoSMcA";
 
-const SpotifyWebAPI = require('spotify-web-api-node');
-// scopes = ['user-read-private'];
-const SpotifyClientID = process.env.SpotifyClientID;
-const SpotifySecretID = process.env.SpotifySecretID;
-// const redirectURL = process.env.redirectURL;
-const spotifyApi = new SpotifyWebAPI({ clientId: SpotifyClientID, clientSecret: SpotifySecretID });
+const spotifyApi = new SpotifyWebApi();
+spotifyApi.setAccessToken(token);
 
-function searchPlaylistHandler(req, res) {
-  let search = req.body.query;
-  spotifyApi.authorizationCodeGrant()
-    .then(data => {
-      spotifyApi.setAccessToken(data.body['access token']);
-      spotifyApi.searchPlaylists(search, { limit: 5 })
-        .then(data => {
-          let playlists = data.body.playlists.items.map(playlist => new SpotifyPlaylist(playlist));
-          res.status(200).render('pages/playlist', { playlists });
-        });
-    });
+//GET MY PROFILE DATA
+async function getMyData() {
+    const me = await spotifyApi.getMe();
+    // console.log(me.body);
+    let data = await getUserPlaylists(me.body.id);
+    return data;
 }
 
+//GET MY PLAYLISTS
+async function getUserPlaylists(userName) {
+  const data = await spotifyApi.getUserPlaylists(userName)
 
-function playlistHandler(req, res) {
-  spotifyApi.authorizationCodeGrant()
-    // const { access_token, refresh_token} = data.body
-    .then(data => {
-      spotifyApi.setAccessToken(data.body['access_token']);
-      spotifyApi.searchPlaylists('Date Night', { limit: 3 })
-        .then(data => {
-          let playlists = data.body.playlists.items.map(playlist => new SpotifyPlaylist(playlist));
-          res.status(200).render('spotifySearch.ejs', { playlists });
-        })
-        .catch(err => errorHandler(req, res, err));
-    })
-    .catch(err => errorHandler(req, res, err));
+  console.log("---------------+++++++++++++++++++++++++")
+  let playlists = []
+
+  for (let playlist of data.body.items) {
+    console.log(playlist.name + " " + playlist.id)
+
+    let tracks = await getPlaylistTracks(playlist.id, playlist.name);
+    // console.log(tracks);
+    playlists.push(tracks);
+    const tracksJSON = { tracks }
+    let data = JSON.stringify(tracksJSON);
+    // fs.writeFileSync(playlist.name + '.json', data);
+  }
+  return playlists;
 }
 
-function SpotifyPlaylist(playlist) {
-  this.description = playlist.description;
-  this.url = playlist.external_urls.spotify;
-  this.image = playlist.images[0].url;
-  this.name = playlist.name;
-  this.spotifyId = playlist.id;
+//GET SONGS FROM PLAYLIST
+async function getPlaylistTracks(playlistId, playlistName) {
+
+  const data = await spotifyApi.getPlaylistTracks(playlistId, {
+    offset: 1,
+    limit: 100,
+    fields: 'items'
+  })
+
+  // console.log('The playlist contains these tracks', data.body);
+  // console.log('The playlist contains these tracks: ', data.body.items[0].track);
+  // console.log("'" + playlistName + "'" + ' contains these tracks:');
+  let tracks = [];
+
+  for (let track_obj of data.body.items) {
+    const track = track_obj.track
+    tracks.push(track);
+    console.log(track.name + " : " + track.artists[0].name)
+  }
+
+  console.log("---------------+++++++++++++++++++++++++")
+  return tracks;
 }
 
-
-function errorHandler(req, res, err) { res.status(500).send(`Error: ${err}`); }
-
-// app.use('*', (req, res) => {
-//   res.status(404).send('Something is wrong');
-// });
-
+// ------------------- Port Listener ------------------- //
 
 client.connect()
   .then(() => {
