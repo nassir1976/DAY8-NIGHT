@@ -37,6 +37,7 @@ app.set('view engine', 'ejs');
 
 // send a public facing directory  for our CSS
 app.use(express.static('./public'));
+app.use(methodOverride('_method'));
 
 // Database conection
 const client = new pg.Client(process.env.DATABASE_URL);// TAKE IN PATH OF DATABASE SERVER
@@ -49,6 +50,11 @@ const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 // create a default route
 app.get('/shows', tvShowHandler);
 app.get('/', homeHandler);
+app.post('/saved', savedMovies);
+app.get('/favorites', favoritesMovies);
+app.delete('/delete/:id', deleteTvShow);
+
+
 
 async function homeHandler(req, res) {   // eslint-disable-line
   let playlist = await getMyData();
@@ -69,7 +75,7 @@ function tvShowHandler(req, res) {
     console.log(shows);
     const updatedInfo = shows.map(tvInfo => new TvShow(tvInfo));
     // res.send(updatedInfo);
-    res.render('tvshow.ejs', { values: updatedInfo });
+    res.render('tvshowResults', { values: updatedInfo, searchterm });
   }).catch(error => console.log(error));
 }
 function TvShow(data) {
@@ -80,6 +86,42 @@ function TvShow(data) {
   this.image = data.show.image ? data.show.image.original : " ";
   console.log(data);
 }
+
+function savedMovies(req, res) {
+  console.log(req.body.image);
+  let SQL = `INSERT INTO tvshows (tvshow_name, summary, url, img) VALUES ($1, $2, $3, $4) RETURNING *;`;
+  const savedShows = [req.body.tvshow_name, req.body.summary, req.body.url, req.body.image];
+  // console.log(savedShows);
+  client.query(SQL, savedShows).then(() => {
+    res.redirect(`/shows?keyword=${req.body.searchterm}`);
+  }).catch(error => console.log(error));
+}
+
+function favoritesMovies(req, res) {
+  const getSavedShows = `SELECT * FROM tvshows`;
+  client.query(getSavedShows).then(saved => {
+    const resultData = saved.rows;
+    const newSaved = resultData.map(values => {
+      return values.names;
+    });
+    console.log(resultData[0]);
+    res.render('tvshowFavorites', {data: resultData});
+    return newSaved;
+  });
+}
+
+function deleteTvShow (req, res) {
+  const id = req.params.id;
+  let SQL = 'DELETE FROM tvshows WHERE id=$1;'; 
+  let values=[id];
+  client.query(SQL, values).then(()=>{
+    res.status(200).redirect('/favorites');
+  });
+}
+
+
+
+
 // app.use('*', (req, res) => {
 //   res.status(404).send('Something is wrong');
 // });
@@ -178,12 +220,6 @@ function deleteCocktail (req, res) {
 }
 
 
-
-function CocktailGenerator(drink) {
-  this.idDrink = drink.idDrink;
-  this.drinkName = drink.strDrink;
-  this.img = drink.strDrinkThumb;
-}
 
 
 
