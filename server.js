@@ -169,12 +169,6 @@ function CocktailGenerator(drink) {
 
 // }
 
-function CocktailGenerator(drink) {
-  this.idDrink = drink.idDrink;
-  this.drinkName = drink.strDrink;
-  this.img = drink.strDrinkThumb;
-}
-
 
 
 
