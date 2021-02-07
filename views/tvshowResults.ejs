@@ -1,1 +1,39 @@
-tv
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>D8Night</title>
+    <link rel="stylesheet" href="/styles.css" type="text/css">
+    <link rel="stylesheet" href="/reset.css" type="text/css">
+    <link rel="stylesheet" href="/styles/base.css" type="text/css">
+    <link rel="stylesheet" href="/styles/layout.css" type="text/css">
+</head>
+
+<nav>
+    <a href="/favorites">FAVORITES movies</a>
+</nav>
+<body>
+    <header>
+        <h1>TV-SHOW</h1>
+    </header>
+    <section id= "main-container"></section>
+    <ul class="tv-show">
+        <%values.forEach(show=> {%>
+            <img class="tvshow" src="<%=show.image%>" alt="<%=show.title%>">
+            <h3 id="tvshow-title"><%=show.name%></h3>
+            <div id="tvshow-summary"><%-show.summary%></div>
+            <form action="/saved" method="POST">
+                <button>Add to Favorites</button>
+                <input type="hidden" name="image" value="<%=show.image%>">
+                <input type="hidden" name="url" value="<%=show.url%>">
+                <input type="hidden" name="tvshow_name" value="<%=show.name%>">
+                <input type="hidden" name="summary" value="<%=show.summary%>">
+                <input type="hidden" name="searchterm" value="<%=searchterm%>">
+
+
+            </form>
+            <%})%>
+    </ul>
+</body>
+
+</html>
