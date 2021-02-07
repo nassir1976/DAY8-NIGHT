@@ -1,12 +1,21 @@
 'use strict';
 
-//bring in dependencies 
+//bring in dependencies
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const superagent = require('superagent');
 const pg = require('pg');
+const { render } = require('ejs');
+const { log } = require('console');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+
+
+// const { log } = require('console');
+// const { render } = require('ejs');
+
 const methodOverride = require('method-override');
 
 
@@ -14,11 +23,17 @@ const methodOverride = require('method-override');
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
-app.use(express.urlencoded({extended:true}));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method')); // allow to PUT and DELETE
+
+app.use(methodOverride('_method'));
+
+
 //application configurations (middleware)  //express middleware
 
 //view engine
-app.set('view engine', 'ejs'); //how you can tell you're using ejs at a quick glance
+app.set('view engine', 'ejs'); 
 
 // send a public facing directory  for our CSS
 app.use(express.static('./public'));
@@ -27,9 +42,10 @@ app.use(methodOverride('_method'));
 // Database conection
 const client = new pg.Client(process.env.DATABASE_URL);// TAKE IN PATH OF DATABASE SERVER
 
+app.use(express.urlencoded({ extended: true }));
+
 
 const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
-
 
 // create a default route
 app.get('/shows', tvShowHandler);
@@ -40,7 +56,9 @@ app.delete('/delete/:id', deleteTvShow);
 
 
 
-function homeHandler(req, res) {
+async function homeHandler(req, res) {   // eslint-disable-line
+  let playlist = await getMyData();
+  console.log({playlist});
   res.status(200).render('index');
 }
 
@@ -108,15 +126,15 @@ function deleteTvShow (req, res) {
 //   res.status(404).send('Something is wrong');
 // });
 
-// ---------------- COCKTAILS API ------------------------
+
 
 
 app.get('/', cocktailHandler);
-// app.get('showDrinks', drinkDetails);
 app.get('/cocktailResults', cocktailHandler);
 app.get('/cocktailSearch', showCocktailSearch);
 app.get('/tvshowSearch', showTvShowSearch);
 app.get('/recipeSearch', showRecipeSearch);
+app.get('/aboutus', getAboutUs);
 
 function showTvShowSearch(req, res) {
   res.status(200).render('tvshowSearch');
@@ -130,20 +148,32 @@ function showRecipeSearch(req, res) {
   res.status(200).render('recipeSearch');
 }
 
-function showSpotifySearch(req, res) {
-  res.status(200).render('spotifySearch');
+// function showSpotifySearch(req, res) {
+//   res.status(200).render('spotifySearch');
+// }
+
+
+function getAboutUs(req, res) {
+  res.status(200).render('aboutus');
 }
 
 
 
+
+// ---------------- COCKTAILS API ------------------------
+
+app.post('/faves', saveCocktail);
+app.get('/cocktailFavorites', showCocktailFaves);
+app.delete('/delete/:id', deleteCocktail);
+
 function cocktailHandler(req, res) {
-  console.log('req.qery...', req.query);
+  // console.log('req.qery...', req.query);
   let drinkType = req.query.keyword;
   let url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${drinkType}`;
 
   superagent.get(url)
     .then(value => {
-      console.log(value);
+      // console.log(value);
       let drinkSearch = value.body.drinks;
       let cocktailIds = [];
       drinkSearch.forEach(drink => {
@@ -157,18 +187,43 @@ function cocktailHandler(req, res) {
     });
 }
 
-function CocktailGenerator(drink) {
-  this.idDrink = drink.idDrink;
-  this.drinkName = drink.strDrink;
-  this.img = drink.strDrinkThumb;
+function saveCocktail (req, res){
+  // console.log('req..', req.body);
+  const SQL = 'INSERT INTO cocktails (drinkName, img) VALUES ($1, $2) RETURNING *;';
+  let params = [req.body.drinkName, req.body.img];
+
+  client.query(SQL, params)
+    .then(data => {
+      console.log(`added ${params[0]} to database`);
+    })
+}
+
+function showCocktailFaves (req, res){
+  let SQL = 'SELECT * FROM cocktails'
+
+  client.query(SQL)
+    .then(results => {
+      res.render('cocktailFavorites', {data: results.rows});
+    })
+}
+
+function deleteCocktail (req, res) {
+  console.log('req.params', req.params.id);
+  let id = req.params.id;
+  let SQL = 'DELETE FROM cocktails WHERE id=$1;';
+  let value = [id];
+
+  client.query(SQL, value)
+    .then(()=>{
+      res.status(200).redirect('/cocktailFavorites');
+    })
 }
 
 
-// function drinkDetails(req, res) {
-//   let url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita';
 
-// }
 
+
+// ------------------- END COCKTAILS API ----------------------------
 
 
 
@@ -177,6 +232,9 @@ function CocktailGenerator(drink) {
 
 
 app.get('/recipeResults', findRecipe);
+app.post('/recipeFavorites', saveRecipe);
+app.delete('/delete/:recipe_id', deleteRecipe);
+app.get('/recipeFavorites', getFavorites);
 
 
 
@@ -187,7 +245,6 @@ app.get('/recipeResults', findRecipe);
 // Recipe Details using an id key
 
 function findRecipe(req, res) {
-  console.log(req);
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
   superagent.get(url)
     .query({
@@ -207,15 +264,61 @@ function findRecipe(req, res) {
     }).catch(error => console.error(error));
 }
 
+// ============== add(save) to database==========
+
+function saveRecipe(req, res) {
+  let SQL = `INSERT INTO recipes (title, image, ingredients, cuisines) VALUES ($1, $2, $3, $4 ) RETURNING *`;
+  console.log('line183', req.body);
+  const values = [req.body.title, req.body.image, req.body.ingredients, req.body.cuisines];
+  client.query(SQL, values)
+    .then(values => {
+      res.redirect('/');
+      // res.render('recipeFavorites.ejs', { results: values.rows[0] });
+    }).catch(error => console.log(error));
+
+}
+
+
+
+function deleteRecipe(req, res) {
+  console.log('req.params>>>>>>>>>>', req.params);
+  const SQL = 'SELECT * FROM recipes WHERE id=$1;';
+  const values = [req.params.id];
+  client.query(SQL, values)
+    .then(values => {
+      // console.log(">>>>>>>>>>", results.rows);
+      res.redirect('/');
+      // render('recipeFavorites.ejs', { results: results.rows[0] });
+
+    });
+
+}
+// =========rendered from database to favoritepage=======
+
+
+function getFavorites(req, res) {
+  const SQL = 'SELECT * FROM recipes;';
+  console.log('line212');
+  return client.query(SQL)
+    .then(results => {
+
+      console.log("line215", results.rows);
+
+      res.render('./recipeFavorites', { recipe: results.rows });
+    });
+}
+
+
+
 
 function RecipeObject(data) {
   this.title = data.title;
-  this.id = data.id;
   this.image = data.image;
   this.ingredients = data.ingredients;
   this.cuisines = data.cuisines;
 
 }
+
 
 // -------------------  Spotify API  ----------------------//
 
@@ -225,6 +328,7 @@ app.get('/spotifySearch', showSpotifySearch);
 app.post('/spotifySearch', searchPlaylistHandler);
 
 const SpotifyWebAPI = require('spotify-web-api-node');
+const { render } = require('ejs');
 // scopes = ['user-read-private'];
 const SpotifyClientID = process.env.SpotifyClientID;
 const SpotifySecretID = process.env.SpotifySecretID;
@@ -244,37 +348,70 @@ function searchPlaylistHandler(req, res) {
     });
 }
 
+// -------------------------- Spotify API ---------------------------- //
 
-function playlistHandler(req, res) {
-  spotifyApi.authorizationCodeGrant()
-    // const { access_token, refresh_token} = data.body
-    .then(data => {
-      spotifyApi.setAccessToken(data.body['access_token']);
-      spotifyApi.searchPlaylists('Date Night', { limit: 3 })
-        .then(data => {
-          let playlists = data.body.playlists.items.map(playlist => new SpotifyPlaylist(playlist));
-          res.status(200).render('spotifySearch.ejs', { playlists });
-        })
-        .catch(err => errorHandler(req, res, err));
-    })
-    .catch(err => errorHandler(req, res, err));
+
+
+const fs = require('fs')
+const SpotifyWebApi = require('spotify-web-api-node');
+const token = "BQDfYegFO-BX9vYP0I-nGEfdjUr1NI57GvDrNI-npeKjKejJAMFO2etyT_ItUpNXhxff7w6V32IcsAkgesDfExxwTIVacPR18vYZehdcnkHpVXkS5mcRgOTOcq8eGcg6LYOWUsj0bciRL8LfGoSMcA";
+
+const spotifyApi = new SpotifyWebApi();
+spotifyApi.setAccessToken(token);
+
+//GET MY PROFILE DATA
+async function getMyData() {
+    const me = await spotifyApi.getMe();
+    // console.log(me.body);
+    let data = await getUserPlaylists(me.body.id);
+    return data;
 }
 
-function SpotifyPlaylist(playlist) {
-  this.description = playlist.description;
-  this.url = playlist.external_urls.spotify;
-  this.image = playlist.images[0].url;
-  this.name = playlist.name;
-  this.spotifyId = playlist.id;
+//GET MY PLAYLISTS
+async function getUserPlaylists(userName) {
+  const data = await spotifyApi.getUserPlaylists(userName)
+
+  console.log("---------------+++++++++++++++++++++++++")
+  let playlists = []
+
+  for (let playlist of data.body.items) {
+    console.log(playlist.name + " " + playlist.id)
+
+    let tracks = await getPlaylistTracks(playlist.id, playlist.name);
+    // console.log(tracks);
+    playlists.push(tracks);
+    const tracksJSON = { tracks }
+    let data = JSON.stringify(tracksJSON);
+    // fs.writeFileSync(playlist.name + '.json', data);
+  }
+  return playlists;
 }
 
+//GET SONGS FROM PLAYLIST
+async function getPlaylistTracks(playlistId, playlistName) {
 
-function errorHandler(req, res, err) { res.status(500).send(`Error: ${err}`); }
+  const data = await spotifyApi.getPlaylistTracks(playlistId, {
+    offset: 1,
+    limit: 100,
+    fields: 'items'
+  })
 
-// app.use('*', (req, res) => {
-//   res.status(404).send('Something is wrong');
-// });
+  // console.log('The playlist contains these tracks', data.body);
+  // console.log('The playlist contains these tracks: ', data.body.items[0].track);
+  // console.log("'" + playlistName + "'" + ' contains these tracks:');
+  let tracks = [];
 
+  for (let track_obj of data.body.items) {
+    const track = track_obj.track
+    tracks.push(track);
+    console.log(track.name + " : " + track.artists[0].name)
+  }
+
+  console.log("---------------+++++++++++++++++++++++++")
+  return tracks;
+}
+
+// ------------------- Port Listener ------------------- //
 
 client.connect()
   .then(() => {
