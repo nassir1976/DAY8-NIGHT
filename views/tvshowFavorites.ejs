@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAVORITES Cookies</title>
+</head>
+<body>
+
+    <ul class="tv-show">
+        <%data.forEach(show=> {%>
+            <li>
+            <img class="tvshow" src="<%=show.img%>" alt="<%=show.title%>">
+            <h3 id="tvshow-title"><%=show.name%></h3>
+            <div id="tvshow-summary"><%-show.summary%></div>
+            <form action="/delete/<%=show.id%>?_method=DELETE" method="POST">
+            <button type="submit">Delete Show</button>
+            </form>
+        </li>
+            <%})%>
+    </ul>
+
+</body>
+</html>
