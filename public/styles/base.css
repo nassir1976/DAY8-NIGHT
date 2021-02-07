@@ -3,6 +3,197 @@ h1{
   font-size: 45px;
   font-weight: bolder;
   margin-top: 25px;
-  color: green;
+  /* color: green; */
 }
 
+#about1 {    
+  text-align: center;
+  color: white;                            
+  font-family: 'Lobster', cursive;
+  height: 100px; 
+  background-color: black; 
+  border: black solid ;
+  margin: 2px 2px 0px; 
+  font-size: 97px;
+  width: auto; 
+  border-radius: 25px 25px ; 
+  /* background: rgb(55, 170, 70); */
+} 
+
+#about2{  
+  font-family: 'Lobster', cursive;
+  text-align: center;  
+  padding: 5px;
+  font-size: 60px; 
+  margin: 5px 2px 0px 0px;
+  color: rgb(255, 255, 255);
+  /* background: rgb(55, 170, 70); */
+  background-color: black; 
+  border: black solid ;
+  border-radius: 50px ;
+  
+}
+#aboutmebody{
+  background-color: rgb(210, 240, 245);
+  width: 80%;
+  margin: auto
+}
+#description {
+  font-family: 'Roboto Condensed', sans-serif;
+  margin-top: 30px;
+  font-size: 30px;
+  line-height: 38px;
+}
+
+.teamParagraph {
+  font-family: 'Roboto Condensed', sans-serif;
+  text-align: center;
+  font-size: 28px;
+  color: rgb(8, 7, 7);
+  word-spacing: 6px;
+  line-height: 32px;
+}
+
+#about3{
+font-family: 'Lobster', cursive;
+border: black solid ;
+border-radius: 25px 25px ;
+text-align: center; 
+padding: 5px;
+font-size: 45px; 
+margin-top: 50px;
+margin-bottom: 50px;
+color:rgb(255, 255, 255);
+/* background: rgb(55, 170, 70); */
+background-color: black; 
+}
+
+.groupMember {
+  display: grid;    
+  grid-template-columns: repeat(2, 1fr); 
+  grid-gap: 20px; 
+  padding: 50px;
+  border: 5px solid black;
+  /* border-radius: 35px; */
+  margin: 20px; 
+  text-align: center;
+  background-color: white;  
+  font-size:20px;
+}
+
+#tayler{
+  height: 300px;
+  overflow: auto;
+}
+
+img{
+  height: 300px;
+  width: 300px
+}
+
+#recipe-title{
+  font-size:x-large;
+  color: green;
+  font-family: 'Lobster', cursive;
+  margin-left: 20px;
+}
+#recipe-h1{
+  text-align: center;
+  color: white;                            
+  font-family: 'Lobster', cursive;
+  height: 50px; 
+  background-color: black; 
+  border: black solid ; 
+  font-size: 40px;
+  width: auto; 
+  margin-bottom: 20px;
+}
+
+.recipe-image{
+  height: 250px;
+  width: 250px;
+  margin-left:25px
+
+
+}
+.result-container{
+  display:flex;
+  justify-content:center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: 200px;
+ 
+}
+
+#Database-btn{
+  width:230px;
+  height: 40px;
+  border-radius: 6px;
+  border: 0px;
+  margin-bottom: 20px;
+  font-size: large;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-family: 'Lobster', cursive;
+  margin-left: 20px;
+
+}
+
+#favo-btn{
+  width:230px;
+  height: 40px;
+  border-radius: 6px;
+  border: 0px;
+  margin-bottom: 20px;
+  font-size: large;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-family: 'Lobster', cursive;
+  margin-left: 20px;
+  margin-left: 650px;
+
+}
+#favo-btn:hover{
+  color: red;
+}
+#delete-btn{
+  width:250px;
+  height: 40px;
+  border-radius: 6px;
+  border: 0px;
+  margin-bottom: 20px;
+  font-size: large;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-family: 'Lobster', cursive;
+  margin-left: 25px;
+  margin-top: 15px;
+  
+
+}
+
+#recipesearch-btn{
+  width:230px;
+  height: 40px;
+  border-radius: 6px;
+  border: 0px;
+  margin-bottom: 20px;
+  font-size: large;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-family: 'Lobster', cursive;
+  margin-left: 20px;
+  margin-left: 650px;
+
+}
+#recipesearch-btn:hover{
+  color: red;
+}

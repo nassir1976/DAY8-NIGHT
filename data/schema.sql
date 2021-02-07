@@ -21,10 +21,12 @@ DROP TABLE IF EXISTS recipes;
 
 CREATE TABLE recipes(
   id SERIAL PRIMARY KEY,
-  recipes_name VARCHAR(255),
-  ingredients VARCHAR(3000),
-  cuisines VARCHAR(255),
-  img VARCHAR(255)
+  title VARCHAR(255),
+  image VARCHAR(255),
+  ingredients VARCHAR(255),
+  cuisines VARCHAR(255)
+
+
 );
 
 DROP TABLE IF EXISTS spotify;
