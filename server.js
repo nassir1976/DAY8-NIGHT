@@ -16,12 +16,19 @@ const methodOverride = require('method-override');
 // const { log } = require('console');
 // const { render } = require('ejs');
 
+const methodOverride = require('method-override');
+
 
 // application setup
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
+
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method')); // allow to PUT and DELETE
+
 app.use(methodOverride('_method'));
+
 
 //application configurations (middleware)  //express middleware
 
@@ -85,6 +92,7 @@ app.get('/cocktailResults', cocktailHandler);
 app.get('/cocktailSearch', showCocktailSearch);
 app.get('/tvshowSearch', showTvShowSearch);
 app.get('/recipeSearch', showRecipeSearch);
+app.get('/aboutus', getAboutUs);
 
 function showTvShowSearch(req, res) {
   res.status(200).render('tvshowSearch');
@@ -101,6 +109,14 @@ function showRecipeSearch(req, res) {
 // function showSpotifySearch(req, res) {
 //   res.status(200).render('spotifySearch');
 // }
+
+
+function getAboutUs(req, res) {
+  res.status(200).render('aboutus');
+}
+
+
+
 
 // ---------------- COCKTAILS API ------------------------
 
@@ -162,11 +178,13 @@ function deleteCocktail (req, res) {
 }
 
 
+
 function CocktailGenerator(drink) {
   this.idDrink = drink.idDrink;
   this.drinkName = drink.strDrink;
   this.img = drink.strDrinkThumb;
 }
+
 
 
 // ------------------- END COCKTAILS API ----------------------------
@@ -178,6 +196,9 @@ function CocktailGenerator(drink) {
 
 
 app.get('/recipeResults', findRecipe);
+app.post('/recipeFavorites', saveRecipe);
+app.delete('/delete/:recipe_id', deleteRecipe);
+app.get('/recipeFavorites', getFavorites);
 
 
 
@@ -188,7 +209,6 @@ app.get('/recipeResults', findRecipe);
 // Recipe Details using an id key
 
 function findRecipe(req, res) {
-  console.log(req);
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
   superagent.get(url)
     .query({
@@ -208,17 +228,92 @@ function findRecipe(req, res) {
     }).catch(error => console.error(error));
 }
 
+// ============== add(save) to database==========
+
+function saveRecipe(req, res) {
+  let SQL = `INSERT INTO recipes (title, image, ingredients, cuisines) VALUES ($1, $2, $3, $4 ) RETURNING *`;
+  console.log('line183', req.body);
+  const values = [req.body.title, req.body.image, req.body.ingredients, req.body.cuisines];
+  client.query(SQL, values)
+    .then(values => {
+      res.redirect('/');
+      // res.render('recipeFavorites.ejs', { results: values.rows[0] });
+    }).catch(error => console.log(error));
+
+}
+
+
+
+function deleteRecipe(req, res) {
+  console.log('req.params>>>>>>>>>>', req.params);
+  const SQL = 'SELECT * FROM recipes WHERE id=$1;';
+  const values = [req.params.id];
+  client.query(SQL, values)
+    .then(values => {
+      // console.log(">>>>>>>>>>", results.rows);
+      res.redirect('/');
+      // render('recipeFavorites.ejs', { results: results.rows[0] });
+
+    });
+
+}
+// =========rendered from database to favoritepage=======
+
+
+function getFavorites(req, res) {
+  const SQL = 'SELECT * FROM recipes;';
+  console.log('line212');
+  return client.query(SQL)
+    .then(results => {
+
+      console.log("line215", results.rows);
+
+      res.render('./recipeFavorites', { recipe: results.rows });
+    });
+}
+
+
+
 
 function RecipeObject(data) {
   this.title = data.title;
-  this.id = data.id;
   this.image = data.image;
   this.ingredients = data.ingredients;
   this.cuisines = data.cuisines;
 
 }
 
+
+// -------------------  Spotify API  ----------------------//
+
+
+app.get('/SpotifyPlaylist', playlistHandler);
+app.get('/spotifySearch', showSpotifySearch);
+app.post('/spotifySearch', searchPlaylistHandler);
+
+const SpotifyWebAPI = require('spotify-web-api-node');
+const { render } = require('ejs');
+// scopes = ['user-read-private'];
+const SpotifyClientID = process.env.SpotifyClientID;
+const SpotifySecretID = process.env.SpotifySecretID;
+// const redirectURL = process.env.redirectURL;
+const spotifyApi = new SpotifyWebAPI({ clientId: SpotifyClientID, clientSecret: SpotifySecretID });
+
+function searchPlaylistHandler(req, res) {
+  let search = req.body.query;
+  spotifyApi.authorizationCodeGrant()
+    .then(data => {
+      spotifyApi.setAccessToken(data.body['access token']);
+      spotifyApi.searchPlaylists(search, { limit: 5 })
+        .then(data => {
+          let playlists = data.body.playlists.items.map(playlist => new SpotifyPlaylist(playlist));
+          res.status(200).render('pages/playlist', { playlists });
+        });
+    });
+}
+
 // -------------------------- Spotify API ---------------------------- //
+
 
 
 const fs = require('fs')
