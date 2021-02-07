@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS cocktails;
 
 CREATE TABLE cocktails(
   id SERIAL PRIMARY KEY,
-  drink_name VARCHAR(255),
+  drinkName VARCHAR(255),
   img VARCHAR(255)
 );
 

@@ -7,6 +7,14 @@ const express = require('express');
 const cors = require('cors');
 const superagent = require('superagent');
 const pg = require('pg');
+const { render } = require('ejs');
+const { log } = require('console');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+
+
+// const { log } = require('console');
+// const { render } = require('ejs');
 
 const methodOverride = require('method-override');
 
@@ -15,13 +23,17 @@ const methodOverride = require('method-override');
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
+
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method')); // allow to PUT and DELETE
+
+app.use(methodOverride('_method'));
+
 
 //application configurations (middleware)  //express middleware
 
 //view engine
-app.set('view engine', 'ejs'); //how you can tell you're using ejs at a quick glance
+app.set('view engine', 'ejs'); 
 
 // send a public facing directory  for our CSS
 app.use(express.static('./public'));
@@ -29,12 +41,10 @@ app.use(express.static('./public'));
 // Database conection
 const client = new pg.Client(process.env.DATABASE_URL);// TAKE IN PATH OF DATABASE SERVER
 
+app.use(express.urlencoded({ extended: true }));
+
 
 const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
-
-
-
-
 
 // create a default route
 app.get('/shows', tvShowHandler);
@@ -74,11 +84,10 @@ function TvShow(data) {
 //   res.status(404).send('Something is wrong');
 // });
 
-// ---------------- COCKTAILS API ------------------------
+
 
 
 app.get('/', cocktailHandler);
-// app.get('showDrinks', drinkDetails);
 app.get('/cocktailResults', cocktailHandler);
 app.get('/cocktailSearch', showCocktailSearch);
 app.get('/tvshowSearch', showTvShowSearch);
@@ -101,6 +110,7 @@ function showRecipeSearch(req, res) {
 //   res.status(200).render('spotifySearch');
 // }
 
+
 function getAboutUs(req, res) {
   res.status(200).render('aboutus');
 }
@@ -108,15 +118,20 @@ function getAboutUs(req, res) {
 
 
 
+// ---------------- COCKTAILS API ------------------------
+
+app.post('/faves', saveCocktail);
+app.get('/cocktailFavorites', showCocktailFaves);
+app.delete('/delete/:id', deleteCocktail);
 
 function cocktailHandler(req, res) {
-  console.log('req.qery...', req.query);
+  // console.log('req.qery...', req.query);
   let drinkType = req.query.keyword;
   let url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${drinkType}`;
 
   superagent.get(url)
     .then(value => {
-      console.log(value);
+      // console.log(value);
       let drinkSearch = value.body.drinks;
       let cocktailIds = [];
       drinkSearch.forEach(drink => {
@@ -130,6 +145,40 @@ function cocktailHandler(req, res) {
     });
 }
 
+function saveCocktail (req, res){
+  // console.log('req..', req.body);
+  const SQL = 'INSERT INTO cocktails (drinkName, img) VALUES ($1, $2) RETURNING *;';
+  let params = [req.body.drinkName, req.body.img];
+
+  client.query(SQL, params)
+    .then(data => {
+      console.log(`added ${params[0]} to database`);
+    })
+}
+
+function showCocktailFaves (req, res){
+  let SQL = 'SELECT * FROM cocktails'
+
+  client.query(SQL)
+    .then(results => {
+      res.render('cocktailFavorites', {data: results.rows});
+    })
+}
+
+function deleteCocktail (req, res) {
+  console.log('req.params', req.params.id);
+  let id = req.params.id;
+  let SQL = 'DELETE FROM cocktails WHERE id=$1;';
+  let value = [id];
+
+  client.query(SQL, value)
+    .then(()=>{
+      res.status(200).redirect('/cocktailFavorites');
+    })
+}
+
+
+
 function CocktailGenerator(drink) {
   this.idDrink = drink.idDrink;
   this.drinkName = drink.strDrink;
@@ -137,9 +186,8 @@ function CocktailGenerator(drink) {
 }
 
 
-// function drinkDetails(req, res) {
-//   let url = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita';
 
+// ------------------- END COCKTAILS API ----------------------------
 
 
 

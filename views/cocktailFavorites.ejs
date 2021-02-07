@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cocktail Favorites</title>
+
+  </head>
+  <body>
+    <section id= "drinkFavoriteResults">
+      <% data.forEach(value => { %>
+        <h2 id="drinkName"><%= value.drinkname %></h2>
+        <img id="img" src="<%= value.img %>"></img>
+        <li hidden id="idDrink"><%= value.idDrink %></li>
+      
+        <input type="hidden" name="drinkname" value="<%= value.drinkname %>">
+        <input type="hidden" name="img" value="<%= value.img %>">
+        <input type="hidden" name="idDrink" value="<%= value.idDrink %>">
+        <form action="/delete/<%= value.id%>?_method=DELETE" method="POST">
+        <button type="submit">DELETE</button>
+      </form>
+    <% }) %>
+      
+    </section>
+  
+  </body>
+</html>
