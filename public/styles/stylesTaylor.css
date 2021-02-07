@@ -1,0 +1,18 @@
+/* /* body {
+  background: red;
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: column;
+  height: 1000px;
+  width: 600px; 
+}
+
+section{
+  display: flex;
+  flex-wrap: no-wrap;
+} */
+
+img {
+  width: 200px;
+  height: 200px;
+}
