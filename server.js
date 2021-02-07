@@ -284,36 +284,7 @@ function RecipeObject(data) {
 }
 
 
-// -------------------  Spotify API  ----------------------//
-
-
-app.get('/SpotifyPlaylist', playlistHandler);
-app.get('/spotifySearch', showSpotifySearch);
-app.post('/spotifySearch', searchPlaylistHandler);
-
-const SpotifyWebAPI = require('spotify-web-api-node');
-const { render } = require('ejs');
-// scopes = ['user-read-private'];
-const SpotifyClientID = process.env.SpotifyClientID;
-const SpotifySecretID = process.env.SpotifySecretID;
-// const redirectURL = process.env.redirectURL;
-const spotifyApi = new SpotifyWebAPI({ clientId: SpotifyClientID, clientSecret: SpotifySecretID });
-
-function searchPlaylistHandler(req, res) {
-  let search = req.body.query;
-  spotifyApi.authorizationCodeGrant()
-    .then(data => {
-      spotifyApi.setAccessToken(data.body['access token']);
-      spotifyApi.searchPlaylists(search, { limit: 5 })
-        .then(data => {
-          let playlists = data.body.playlists.items.map(playlist => new SpotifyPlaylist(playlist));
-          res.status(200).render('pages/playlist', { playlists });
-        });
-    });
-}
-
 // -------------------------- Spotify API ---------------------------- //
-
 
 
 const fs = require('fs')
