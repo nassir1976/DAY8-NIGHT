@@ -12,57 +12,63 @@ const { log } = require('console');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 
-
-// const { log } = require('console');
-// const { render } = require('ejs');
-
-
-
-
 // application setup
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
 
-app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride('_method')); // allow to PUT and DELETE
-
-app.use(methodOverride('_method'));
-
-
 //application configurations (middleware)  //express middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method')); 
 
 //view engine
 app.set('view engine', 'ejs'); 
 
 // send a public facing directory  for our CSS
 app.use(express.static('./public'));
-app.use(methodOverride('_method'));
 
 // Database conection
-const client = new pg.Client(process.env.DATABASE_URL);// TAKE IN PATH OF DATABASE SERVER
-
-app.use(express.urlencoded({ extended: true }));
-
+const client = new pg.Client(process.env.DATABASE_URL);// 
 
 const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
-// create a default route
-app.get('/shows', tvShowHandler);
+// Routes
 app.get('/', homeHandler);
+app.get('/aboutus', getAboutUs);
+
+app.get('/tvshowSearch', showTvShowSearch);
+app.get('/shows', tvShowHandler);
 app.post('/saved', savedMovies);
-app.get('/favorites', favoritesMovies);
 app.delete('/delete/:id', deleteTvShow);
 
+app.get('/cocktailSearch', showCocktailSearch);
+app.get('/cocktailResults', cocktailHandler);
+app.post('/faves', saveCocktail);
+app.get('/cocktailFavorites', showCocktailFaves);
+app.delete('/deleteCocktail/:id', deleteCocktail);
+
+app.get('/recipeSearch', showRecipeSearch);
+app.get('/recipeResults', findRecipe);
+app.post('/recipeFavorites', saveRecipe);
+app.delete('/deleteRecipe/:recipe_id', deleteRecipe);
+app.get('/recipeFavorites', getFavorites);
+
+app.get('/favorites', favoritesMovies);
 
 
-async function homeHandler(req, res) {   // eslint-disable-line
-  let playlist = await getMyData();
-  console.log({playlist});
-  res.status(200).render('index');
+// FUNCTIONS FOR RENDERING HOMEPAGE & ABOUT US PAGE
+function homeHandler (req, res){
+    res.status(200).render('index');
 }
 
+function getAboutUs(req, res) {
+  res.status(200).render('aboutus');
+}
 
+// --------TV SHOW API ----------
+function showTvShowSearch(req, res) {
+  res.status(200).render('tvshowSearch');
+}
 
 function tvShowHandler(req, res) {
   const searchterm = req.query.keyword;
@@ -119,52 +125,11 @@ function deleteTvShow (req, res) {
   });
 }
 
-
-
-
-// app.use('*', (req, res) => {
-//   res.status(404).send('Something is wrong');
-// });
-
-
-
-
-app.get('/', cocktailHandler);
-app.get('/cocktailResults', cocktailHandler);
-app.get('/cocktailSearch', showCocktailSearch);
-app.get('/tvshowSearch', showTvShowSearch);
-app.get('/recipeSearch', showRecipeSearch);
-app.get('/aboutus', getAboutUs);
-
-function showTvShowSearch(req, res) {
-  res.status(200).render('tvshowSearch');
-}
+// ---------------- COCKTAILS API ------------------------
 
 function showCocktailSearch(req, res) {
   res.status(200).render('cocktailSearch');
 }
-
-function showRecipeSearch(req, res) {
-  res.status(200).render('recipeSearch');
-}
-
-// function showSpotifySearch(req, res) {
-//   res.status(200).render('spotifySearch');
-// }
-
-
-function getAboutUs(req, res) {
-  res.status(200).render('aboutus');
-}
-
-
-
-
-// ---------------- COCKTAILS API ------------------------
-
-app.post('/faves', saveCocktail);
-app.get('/cocktailFavorites', showCocktailFaves);
-app.delete('/delete/:id', deleteCocktail);
 
 function cocktailHandler(req, res) {
   // console.log('req.qery...', req.query);
@@ -175,6 +140,7 @@ function cocktailHandler(req, res) {
     .then(value => {
       // console.log(value);
       let drinkSearch = value.body.drinks;
+      // console.log(drinkSearch);
       let cocktailIds = [];
       drinkSearch.forEach(drink => {
         let newdrink = new CocktailGenerator(drink);
@@ -208,7 +174,7 @@ function showCocktailFaves (req, res){
 }
 
 function deleteCocktail (req, res) {
-  console.log('req.params', req.params.id);
+  // console.log('req.params', req.params.=);
   let id = req.params.id;
   let SQL = 'DELETE FROM cocktails WHERE id=$1;';
   let value = [id];
@@ -219,30 +185,19 @@ function deleteCocktail (req, res) {
     })
 }
 
+function CocktailGenerator(drink) {
+  this.idDrink = drink.idDrink;
+  this.drinkName = drink.strDrink;
+  this.img = drink.strDrinkThumb;
+}
 
-
-
-
-// ------------------- END COCKTAILS API ----------------------------
-
-
-
-
-
-
-
-app.get('/recipeResults', findRecipe);
-app.post('/recipeFavorites', saveRecipe);
-app.delete('/delete/:recipe_id', deleteRecipe);
-app.get('/recipeFavorites', getFavorites);
-
-
-
-
-
-
+// ------------------- FOOD API ----------------------------
 
 // Recipe Details using an id key
+
+function showRecipeSearch(req, res) {
+  res.status(200).render('recipeSearch');
+}
 
 function findRecipe(req, res) {
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
@@ -279,22 +234,34 @@ function saveRecipe(req, res) {
 }
 
 
-
 function deleteRecipe(req, res) {
-  console.log('req.params>>>>>>>>>>', req.params);
-  const SQL = 'SELECT * FROM recipes WHERE id=$1;';
-  const values = [req.params.id];
-  client.query(SQL, values)
-    .then(values => {
+  console.log('req.params>>>>>>>>>>', req.params.id);
+  const SQL = 'DELETE FROM recipes WHERE id=$1;';
+  let id = req.params.recipe_id;
+  let value=[id];
+  // const value = [req.params.id];
+  client.query(SQL, value)
+    .then(()=> {
       // console.log(">>>>>>>>>>", results.rows);
-      res.redirect('/');
+      res.redirect('/recipeFavorites');
       // render('recipeFavorites.ejs', { results: results.rows[0] });
-
     });
-
 }
-// =========rendered from database to favoritepage=======
 
+// function deleteRecipe(req, res) {
+//   console.log('req.params>>>>>>>>>>', req.params);
+//   const SQL = 'SELECT * FROM recipes WHERE id=$1;';
+//   const values = [req.params.id];
+//   client.query(SQL, values)
+//     .then(values => {
+//       // console.log(">>>>>>>>>>", results.rows);
+//       res.redirect('/recipeFavorites');
+//       // render('recipeFavorites.ejs', { results: results.rows[0] });
+
+//     });
+// }
+
+// =========rendered from database to favoritepage=======
 
 function getFavorites(req, res) {
   const SQL = 'SELECT * FROM recipes;';
@@ -308,78 +275,83 @@ function getFavorites(req, res) {
     });
 }
 
-
-
-
 function RecipeObject(data) {
   this.title = data.title;
   this.image = data.image;
   this.ingredients = data.ingredients;
   this.cuisines = data.cuisines;
-
 }
 
 
+// -------------SPOTIFY---------------
 
+// function showSpotifySearch(req, res) {
+//   res.status(200).render('spotifySearch');
+// }
 
-const fs = require('fs')
-const SpotifyWebApi = require('spotify-web-api-node');
-const token = "BQDfYegFO-BX9vYP0I-nGEfdjUr1NI57GvDrNI-npeKjKejJAMFO2etyT_ItUpNXhxff7w6V32IcsAkgesDfExxwTIVacPR18vYZehdcnkHpVXkS5mcRgOTOcq8eGcg6LYOWUsj0bciRL8LfGoSMcA";
+// async function homeHandler(req, res) {   // eslint-disable-line
+//   let playlist = await getMyData();
+//   console.log({playlist});
+// }
 
-const spotifyApi = new SpotifyWebApi();
-spotifyApi.setAccessToken(token);
+// const fs = require('fs')
+// const SpotifyWebApi = require('spotify-web-api-node');
+// const token = "BQDfYegFO-BX9vYP0I-nGEfdjUr1NI57GvDrNI-npeKjKejJAMFO2etyT_ItUpNXhxff7w6V32IcsAkgesDfExxwTIVacPR18vYZehdcnkHpVXkS5mcRgOTOcq8eGcg6LYOWUsj0bciRL8LfGoSMcA";
 
-//GET MY PROFILE DATA
-async function getMyData() {
-    const me = await spotifyApi.getMe();
-    // console.log(me.body);
-    let data = await getUserPlaylists(me.body.id);
-    return data;
-}
+// const spotifyApi = new SpotifyWebApi();
+// spotifyApi.setAccessToken(token);
 
-//GET MY PLAYLISTS
-async function getUserPlaylists(userName) {
-  const data = await spotifyApi.getUserPlaylists(userName)
+// //GET MY PROFILE DATA
+// async function getMyData() {
+//     const me = await spotifyApi.getMe();
+//     // console.log(me.body);
+//     let data = await getUserPlaylists(me.body.id);
+//     return data;
+// }
 
-  console.log("---------------+++++++++++++++++++++++++")
-  let playlists = []
+// //GET MY PLAYLISTS
+// async function getUserPlaylists(userName) {
+//   const data = await spotifyApi.getUserPlaylists(userName)
 
-  for (let playlist of data.body.items) {
-    console.log(playlist.name + " " + playlist.id)
+//   console.log("---------------+++++++++++++++++++++++++")
+//   let playlists = []
 
-    let tracks = await getPlaylistTracks(playlist.id, playlist.name);
-    // console.log(tracks);
-    playlists.push(tracks);
-    const tracksJSON = { tracks }
-    let data = JSON.stringify(tracksJSON);
-    // fs.writeFileSync(playlist.name + '.json', data);
-  }
-  return playlists;
-}
+//   for (let playlist of data.body.items) {
+//     console.log(playlist.name + " " + playlist.id)
 
-//GET SONGS FROM PLAYLIST
-async function getPlaylistTracks(playlistId, playlistName) {
+//     let tracks = await getPlaylistTracks(playlist.id, playlist.name);
+//     // console.log(tracks);
+//     playlists.push(tracks);
+//     const tracksJSON = { tracks }
+//     let data = JSON.stringify(tracksJSON);
+//     // fs.writeFileSync(playlist.name + '.json', data);
+//   }
+//   return playlists;
+// }
 
-  const data = await spotifyApi.getPlaylistTracks(playlistId, {
-    offset: 1,
-    limit: 100,
-    fields: 'items'
-  })
+// //GET SONGS FROM PLAYLIST
+// async function getPlaylistTracks(playlistId, playlistName) {
 
-  // console.log('The playlist contains these tracks', data.body);
-  // console.log('The playlist contains these tracks: ', data.body.items[0].track);
-  // console.log("'" + playlistName + "'" + ' contains these tracks:');
-  let tracks = [];
+//   const data = await spotifyApi.getPlaylistTracks(playlistId, {
+//     offset: 1,
+//     limit: 100,
+//     fields: 'items'
+//   })
 
-  for (let track_obj of data.body.items) {
-    const track = track_obj.track
-    tracks.push(track);
-    console.log(track.name + " : " + track.artists[0].name)
-  }
+//   // console.log('The playlist contains these tracks', data.body);
+//   // console.log('The playlist contains these tracks: ', data.body.items[0].track);
+//   // console.log("'" + playlistName + "'" + ' contains these tracks:');
+//   let tracks = [];
 
-  console.log("---------------+++++++++++++++++++++++++")
-  return tracks;
-}
+//   for (let track_obj of data.body.items) {
+//     const track = track_obj.track
+//     tracks.push(track);
+//     console.log(track.name + " : " + track.artists[0].name)
+//   }
+
+//   console.log("---------------+++++++++++++++++++++++++")
+//   return tracks;
+// }
 
 // ------------------- Port Listener ------------------- //
 
