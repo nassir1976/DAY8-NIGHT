@@ -2,24 +2,29 @@
 <html>
   <head>
     <title>Cocktail Favorites</title>
-
+    <link rel="stylesheet" type="text/css" href="./styles/reset.css">
+    <link rel="stylesheet" type="text/css" href="./styles/stylesTaylor.css">
   </head>
   <body>
-    <section id= "drinkFavoriteResults">
+    <main>
+    
       <% data.forEach(value => { %>
-        <h2 id="drinkName"><%= value.drinkname %></h2>
+        <section id= "drinkFavoriteResults">
+        <h2 id="drinkName"><%= value.drinkName %></h2>
         <img id="img" src="<%= value.img %>"></img>
         <li hidden id="idDrink"><%= value.idDrink %></li>
-      
-        <input type="hidden" name="drinkname" value="<%= value.drinkname %>">
+
+        <input type="hidden" name="drinkName" value="<%= value.drinkName %>">
         <input type="hidden" name="img" value="<%= value.img %>">
         <input type="hidden" name="idDrink" value="<%= value.idDrink %>">
-        <form action="/delete/<%= value.id%>?_method=DELETE" method="POST">
+        <form action="/deleteCocktail/<%= value.id%>?_method=DELETE" method="POST">
         <button type="submit">DELETE</button>
       </form>
+    </section>
     <% }) %>
       
     </section>
-  
+  </main>
+
   </body>
 </html>

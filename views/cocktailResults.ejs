@@ -6,20 +6,33 @@
     <link rel="stylesheet" type="text/css" href="./styles/stylesTaylor.css">
   </head>
   <body>
-    <section id= "drinkResults">
+
+    <header>
       <a href="/cocktailFavorites">Saved Cocktails</a>
+
+    </header>
+
+    <main>
+    
       <% data.forEach(value => { %>
-        <h2 id="drinkName"><%= value.drinkName %></h2>
-        <img id="img" src="<%= value.img %>"></img>
-        <li hidden id="idDrink"><%= value.idDrink %></li>
-       <form action="/faves" method="POST">
-        <input type="hidden" name="drinkName" value="<%= value.drinkName %>">
-        <input type="hidden" name="img" value="<%= value.img %>">
-        <input type="hidden" name="idDrink" value="<%= value.idDrink %>">
-        <button type="submit">Favorite this Drink</button>
-      </form>
+        <section id= "drinkResults">
+
+            <h2 id="drinkName"><%= value.drinkName %></h2>
+            <img id="img" src="<%= value.img %>"></img>
+            <li hidden id="idDrink"><%= value.idDrink %></li>
+    
+
+          <form action="/faves" method="POST">
+          <input type="hidden" name="drinkName" value="<%= value.drinkName %>">
+          <input type="hidden" name="img" value="<%= value.img %>">
+          <input type="hidden" name="idDrink" value="<%= value.idDrink %>">
+          <button type="submit">Favorite this Drink</button>
+          </form>
+      </section>
+     
     <% }) %>
-    </section>
+    
+  </main>
   
   </body>
 </html>
