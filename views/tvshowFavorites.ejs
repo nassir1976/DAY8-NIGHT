@@ -4,21 +4,21 @@
    
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./styles/reset.css">
-  <link rel="stylesheet" href="./styles/base.css" >
-  <link rel="stylesheet" href="./styles/layouts.css" >
-  <link rel="stylesheet" href="./styles/modules.css"> 
+  <!-- <link rel="stylesheet" href="./styles/base.css" >
+  <link rel="stylesheet" href="./styles/layouts.css" > -->
+  <!-- <link rel="stylesheet" href="./styles/modules.css">  -->
    <link rel="stylesheet" type="text/css" href="./styles/stylesTaylor.css">
+   <link rel="stylesheet" href="../public/styles/gridstyles.css">
   <title>final project</title>
 </head>
 <body id="favorite-page">
-    <h1 id="recipe-h1" > Favorite Tv-Show List </h1>
-    <ul>
-        <div>
-    <li><a id="tvshowsearch-btn" href='/tvshowSearch'> Go to Search page </a></li>
-    </div>
-   <li><a id="home-btn" href='/'> Go to Home Page </a></li>
-    </ul>
-    <ul class="tv-show">
+    <header>
+        <ul>
+         <li><a href="./aboutus"> ABOUTUS PAGE</a></li> 
+          <li><a href="./allFavorites">FAVORITES PAGE</a></li>
+          <li><a href="/">HOME PAGE</a></li>
+      </ul>
+      </header>
 
  <main>
      
@@ -27,7 +27,7 @@
 
             <img class="tvshow" src="<%=show.img%>" alt="<%=show.title%>">
             <h3 id="tvshow-title"><%=show.name%></h3>
-            <div id="tvshow-summary"><%-show.summary%></div>
+            <!-- <div id="tvshow-summary"><%-show.summary%></div> -->
             <form action="/delete/<%=show.id%>?_method=DELETE" method="POST">
             <button id="delete-btn1" type="submit">Delete Show</button>
             </form>
