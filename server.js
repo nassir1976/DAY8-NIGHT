@@ -55,12 +55,14 @@ app.get('/favorites', favoritesMovies);
 app.delete('/delete/:id', deleteTvShow);
 
 
-
-async function homeHandler(req, res) {   // eslint-disable-line
-  let playlist = await getMyData();
-  console.log({playlist});
+function homeHandler (req, res){
   res.status(200).render('index');
 }
+// async function homeHandler(req, res) {   // eslint-disable-line
+//   let playlist = await getMyData();
+//   console.log({playlist});
+//   res.status(200).render('index');
+// }
 
 
 
@@ -129,7 +131,7 @@ function deleteTvShow (req, res) {
 
 
 
-app.get('/', cocktailHandler);
+// app.get('/', cocktailHandler);
 app.get('/cocktailResults', cocktailHandler);
 app.get('/cocktailSearch', showCocktailSearch);
 app.get('/tvshowSearch', showTvShowSearch);
@@ -195,7 +197,7 @@ function saveCocktail (req, res){
   client.query(SQL, params)
     .then(data => {
       console.log(`added ${params[0]} to database`);
-    })
+    });
 }
 
 function showCocktailFaves (req, res){
@@ -204,7 +206,7 @@ function showCocktailFaves (req, res){
   client.query(SQL)
     .then(results => {
       res.render('cocktailFavorites', {data: results.rows});
-    })
+    });
 }
 
 function deleteCocktail (req, res) {
@@ -216,14 +218,19 @@ function deleteCocktail (req, res) {
   client.query(SQL, value)
     .then(()=>{
       res.status(200).redirect('/cocktailFavorites');
-    })
+    });
+}
+
+function CocktailGenerator(drink) {
+  this.idDrink = drink.idDrink;
+  this.drinkName = drink.strDrink;
+  this.img = drink.strDrinkThumb;
 }
 
 
 
 
-
-// ------------------- END COCKTAILS API ----------------------------
+// // ------------------- END COCKTAILS API ----------------------------
 
 
 
@@ -233,7 +240,7 @@ function deleteCocktail (req, res) {
 
 app.get('/recipeResults', findRecipe);
 app.post('/recipeFavorites', saveRecipe);
-app.delete('/delete/:recipe_id', deleteRecipe);
+app.delete('/deleteRecipe/:recipe_id', deleteRecipe);
 app.get('/recipeFavorites', getFavorites);
 
 
@@ -250,7 +257,7 @@ function findRecipe(req, res) {
     .query({
       apiKey: RECIPE_API_KEY,
       cuisine: req.query.keyword,
-      number: 10,
+      number: 50,
       instructionsRequired: true
     })
     .then(detailsIfo => {
@@ -280,14 +287,30 @@ function saveRecipe(req, res) {
 
 
 
+// function deleteRecipe(req, res) {
+//   console.log('req.params>>>>>>>>>>', req.params);
+//   const SQL = 'SELECT * FROM recipes WHERE id=$1;';
+//   const values = [req.params.id];
+//   client.query(SQL, values)
+//     .then(values => {
+//       // console.log(">>>>>>>>>>", results.rows);
+//       res.redirect('/');
+//       // render('recipeFavorites.ejs', { results: results.rows[0] });
+
+//     });
+
+// }
 function deleteRecipe(req, res) {
-  console.log('req.params>>>>>>>>>>', req.params);
-  const SQL = 'SELECT * FROM recipes WHERE id=$1;';
-  const values = [req.params.id];
-  client.query(SQL, values)
-    .then(values => {
+  console.log('req.params>>>>>>>>>>', req.params.id);
+  const SQL = 'DELETE FROM recipes WHERE id=$1;';
+  let id = req.params.recipe_id;
+  console.log('line308',id);
+  let value=[id];
+  // const value = [req.params.id];
+  client.query(SQL, value)
+    .then(()=> {
       // console.log(">>>>>>>>>>", results.rows);
-      res.redirect('/');
+      res.redirect('/recipeFavorites');
       // render('recipeFavorites.ejs', { results: results.rows[0] });
 
     });
@@ -322,66 +345,66 @@ function RecipeObject(data) {
 
 
 
-const fs = require('fs')
-const SpotifyWebApi = require('spotify-web-api-node');
-const token = "BQDfYegFO-BX9vYP0I-nGEfdjUr1NI57GvDrNI-npeKjKejJAMFO2etyT_ItUpNXhxff7w6V32IcsAkgesDfExxwTIVacPR18vYZehdcnkHpVXkS5mcRgOTOcq8eGcg6LYOWUsj0bciRL8LfGoSMcA";
+// const fs = require('fs')
+// const SpotifyWebApi = require('spotify-web-api-node');
+// const token = "BQDfYegFO-BX9vYP0I-nGEfdjUr1NI57GvDrNI-npeKjKejJAMFO2etyT_ItUpNXhxff7w6V32IcsAkgesDfExxwTIVacPR18vYZehdcnkHpVXkS5mcRgOTOcq8eGcg6LYOWUsj0bciRL8LfGoSMcA";
 
-const spotifyApi = new SpotifyWebApi();
-spotifyApi.setAccessToken(token);
+// const spotifyApi = new SpotifyWebApi();
+// spotifyApi.setAccessToken(token);
 
-//GET MY PROFILE DATA
-async function getMyData() {
-    const me = await spotifyApi.getMe();
-    // console.log(me.body);
-    let data = await getUserPlaylists(me.body.id);
-    return data;
-}
+// //GET MY PROFILE DATA
+// async function getMyData() {
+//     const me = await spotifyApi.getMe();
+//     // console.log(me.body);
+//     let data = await getUserPlaylists(me.body.id);
+//     return data;
+// }
 
-//GET MY PLAYLISTS
-async function getUserPlaylists(userName) {
-  const data = await spotifyApi.getUserPlaylists(userName)
+// //GET MY PLAYLISTS
+// async function getUserPlaylists(userName) {
+//   const data = await spotifyApi.getUserPlaylists(userName)
 
-  console.log("---------------+++++++++++++++++++++++++")
-  let playlists = []
+//   console.log("---------------+++++++++++++++++++++++++")
+//   let playlists = []
 
-  for (let playlist of data.body.items) {
-    console.log(playlist.name + " " + playlist.id)
+//   for (let playlist of data.body.items) {
+//     console.log(playlist.name + " " + playlist.id)
 
-    let tracks = await getPlaylistTracks(playlist.id, playlist.name);
-    // console.log(tracks);
-    playlists.push(tracks);
-    const tracksJSON = { tracks }
-    let data = JSON.stringify(tracksJSON);
-    // fs.writeFileSync(playlist.name + '.json', data);
-  }
-  return playlists;
-}
+//     let tracks = await getPlaylistTracks(playlist.id, playlist.name);
+//     // console.log(tracks);
+//     playlists.push(tracks);
+//     const tracksJSON = { tracks }
+//     let data = JSON.stringify(tracksJSON);
+//     // fs.writeFileSync(playlist.name + '.json', data);
+//   }
+//   return playlists;
+// }
 
-//GET SONGS FROM PLAYLIST
-async function getPlaylistTracks(playlistId, playlistName) {
+// //GET SONGS FROM PLAYLIST
+// async function getPlaylistTracks(playlistId, playlistName) {
 
-  const data = await spotifyApi.getPlaylistTracks(playlistId, {
-    offset: 1,
-    limit: 100,
-    fields: 'items'
-  })
+//   const data = await spotifyApi.getPlaylistTracks(playlistId, {
+//     offset: 1,
+//     limit: 100,
+//     fields: 'items'
+//   })
 
-  // console.log('The playlist contains these tracks', data.body);
-  // console.log('The playlist contains these tracks: ', data.body.items[0].track);
-  // console.log("'" + playlistName + "'" + ' contains these tracks:');
-  let tracks = [];
+//   // console.log('The playlist contains these tracks', data.body);
+//   // console.log('The playlist contains these tracks: ', data.body.items[0].track);
+//   // console.log("'" + playlistName + "'" + ' contains these tracks:');
+//   let tracks = [];
 
-  for (let track_obj of data.body.items) {
-    const track = track_obj.track
-    tracks.push(track);
-    console.log(track.name + " : " + track.artists[0].name)
-  }
+//   for (let track_obj of data.body.items) {
+//     const track = track_obj.track
+//     tracks.push(track);
+//     console.log(track.name + " : " + track.artists[0].name)
+//   }
 
-  console.log("---------------+++++++++++++++++++++++++")
-  return tracks;
-}
+//   console.log("---------------+++++++++++++++++++++++++")
+//   return tracks;
+// }
 
-// ------------------- Port Listener ------------------- //
+// // ------------------- Port Listener ------------------- //
 
 client.connect()
   .then(() => {

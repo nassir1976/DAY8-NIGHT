@@ -2,32 +2,36 @@
 <html lang="en">
 
 <head>
-    <title>D8Night</title>
-    <link rel="stylesheet" href="/styles.css" type="text/css">
-    <link rel="stylesheet" href="/reset.css" type="text/css">
-    <link rel="stylesheet" href="/styles/base.css" type="text/css">
-    <link rel="stylesheet" href="/styles/layout.css" type="text/css">
+    <title>final project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/reset.css">
+    <link rel="stylesheet" href="./styles/base.css" >
+    <link rel="stylesheet" href="./styles/layouts.css" >
+    <link rel="stylesheet" href="./styles/modules.css"> 
+    
 </head>
 
 <nav>
-    <a href="/favorites">FAVORITES movies</a>
+   
 </nav>
-<body>
+
+<body id="resultpage">
     <header>
-        <h1>TV-SHOW</h1>
+        <h1 id=tv-h1>TV-SHOW LIST </h1>
+        <a id="favo-btn" href="/favorites">FAVORITES TV-SHOW</a>
     </header>
     <section id= "main-container"></section>
     <ul class="tv-show">
         <%values.forEach(show=> {%>
             <img class="tvshow" src="<%=show.image%>" alt="<%=show.title%>">
             <h3 id="tvshow-title"><%=show.name%></h3>
-            <div id="tvshow-summary"><%-show.summary%></div>
+            <!-- <div id="tvshow-summary"><%-show.summary%></div> -->
             <form action="/saved" method="POST">
-                <button>Add to Favorites</button>
+                <button id="Database-tv">Add to Favorites</button>
                 <input type="hidden" name="image" value="<%=show.image%>">
                 <input type="hidden" name="url" value="<%=show.url%>">
                 <input type="hidden" name="tvshow_name" value="<%=show.name%>">
-                <input type="hidden" name="summary" value="<%=show.summary%>">
+                <!-- <input id="summary" type="hidden" name="summary" value="<%=show.summary%>"> -->
                 <input type="hidden" name="searchterm" value="<%=searchterm%>">
 
 
