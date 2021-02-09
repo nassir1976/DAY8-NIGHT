@@ -15,8 +15,6 @@
 <nav>
   <!-- <a href='/recipeFavorites'> FAVORITES PAGE</a> -->
   
-
-
 </nav>
 <body>
   <header>
@@ -25,15 +23,12 @@
 <a id="favo-btn" href='/recipeFavorites'> FAVORITES PAGE</a>
 
 
-<section id="main-contain">
-  <ul class="recpie">
+<main>
+ 
 <%recipe.forEach(results=>{%>
-     <div class="result-container">
+    <section>
           <img class="recipe-image" src="<%=results.image%>" alt="<%=results.title%>">
           <h3 id="recipe-title"><%=results.title%></h3>
-          <p id="recipe-ingre"><%=results.ingredients%></p>
-          <p id="recipe-cuisines"><%=results.cuisines%></p>
-      </div>
       <form action = "/recipeFavorites" method="post">
         <input type="hidden" name="image" value="<%= results.image%>">
         <input type="hidden" name="title" value="<%= results.title%>">
@@ -41,10 +36,12 @@
         <input type="hidden" name="cusines" value="<%= results.cusines%>">
         <button id="Database-btn" type="submit">add to Database</button>
         </form>
+
+    </section>
         
     <% }) %>
     
-   
+  </main>
 
     </body>
 

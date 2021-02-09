@@ -12,23 +12,14 @@ const { log } = require('console');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 
-
-// const { log } = require('console');
-// const { render } = require('ejs');
-
-
 // application setup
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
 
-app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride('_method')); // allow to PUT and DELETE
-
-app.use(methodOverride('_method'));
-
-
 //application configurations (middleware)  //express middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method')); 
 
 //view engine
 app.set('view engine', 'ejs');
@@ -37,24 +28,53 @@ app.set('view engine', 'ejs');
 app.use(express.static('./public'));
 
 // Database conection
-const client = new pg.Client(process.env.DATABASE_URL);// TAKE IN PATH OF DATABASE SERVER
-
-app.use(express.urlencoded({ extended: true }));
-
+const client = new pg.Client(process.env.DATABASE_URL);// 
 
 const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
-// create a default route
-app.get('/shows', tvShowHandler);
+// Routes
 app.get('/', homeHandler);
+app.get('/aboutus', getAboutUs);
 
-async function homeHandler(req, res) {   // eslint-disable-line //
-  let playlist = await getMyData();
-  console.log({ playlist });
-  res.status(200).render('index');
+app.get('/tvshowSearch', showTvShowSearch);
+app.get('/shows', tvShowHandler);
+app.post('/saved', savedMovies);
+app.delete('/delete/:id', deleteTvShow);
+
+app.get('/cocktailSearch', showCocktailSearch);
+app.get('/cocktailResults', cocktailHandler);
+app.post('/faves', saveCocktail);
+app.get('/cocktailFavorites', showCocktailFaves);
+app.delete('/deleteCocktail/:id', deleteCocktail);
+
+
+app.get('/recipeSearch', showRecipeSearch);
+app.get('/recipeResults', findRecipe);
+app.post('/recipeFavorites', saveRecipe);
+app.delete('/deleteRecipe/:recipe_id', deleteRecipe);
+app.get('/recipeFavorites', getFavorites);
+
+app.get('/favorites', favoritesMovies);
+
+
+// FUNCTIONS FOR RENDERING HOMEPAGE & ABOUT US PAGE
+function homeHandler (req, res){
+    res.status(200).render('index');
+}
+// async function homeHandler(req, res) {   // eslint-disable-line
+//   let playlist = await getMyData();
+//   console.log({playlist});
+//   res.status(200).render('index');
+// }
+
+function getAboutUs(req, res) {
+  res.status(200).render('aboutus');
 }
 
-
+// --------TV SHOW API ----------
+function showTvShowSearch(req, res) {
+  res.status(200).render('tvshowSearch');
+}
 
 function tvShowHandler(req, res) {
   const searchterm = req.query.keyword;
@@ -67,7 +87,7 @@ function tvShowHandler(req, res) {
     console.log(shows);
     const updatedInfo = shows.map(tvInfo => new TvShow(tvInfo));
     // res.send(updatedInfo);
-    res.render('tvshow.ejs', { values: updatedInfo });
+    res.render('tvshowResults', { values: updatedInfo, searchterm });
   }).catch(error => console.log(error));
 }
 function TvShow(data) {
@@ -78,14 +98,44 @@ function TvShow(data) {
   this.image = data.show.image ? data.show.image.original : " ";
   console.log(data);
 }
-// app.use('*', (req, res) => {
-//   res.status(404).send('Something is wrong');
-// });
+
+function savedMovies(req, res) {
+  console.log(req.body.image);
+  let SQL = `INSERT INTO tvshows (tvshow_name, summary, url, img) VALUES ($1, $2, $3, $4) RETURNING *;`;
+  const savedShows = [req.body.tvshow_name, req.body.summary, req.body.url, req.body.image];
+  // console.log(savedShows);
+  client.query(SQL, savedShows).then(() => {
+    res.redirect(`/shows?keyword=${req.body.searchterm}`);
+  }).catch(error => console.log(error));
+}
+
+function favoritesMovies(req, res) {
+  const getSavedShows = `SELECT * FROM tvshows`;
+  client.query(getSavedShows).then(saved => {
+    const resultData = saved.rows;
+    const newSaved = resultData.map(values => {
+      return values.names;
+    });
+    console.log(resultData[0]);
+    res.render('tvshowFavorites', {data: resultData});
+    return newSaved;
+  });
+}
+
+function deleteTvShow (req, res) {
+  const id = req.params.id;
+  let SQL = 'DELETE FROM tvshows WHERE id=$1;'; 
+  let values=[id];
+  client.query(SQL, values).then(()=>{
+    res.status(200).redirect('/favorites');
+  });
+}
 
 
 
 
-app.get('/', cocktailHandler);
+
+// app.get('/', cocktailHandler);
 app.get('/cocktailResults', cocktailHandler);
 app.get('/cocktailSearch', showCocktailSearch);
 app.get('/tvshowSearch', showTvShowSearch);
@@ -95,32 +145,9 @@ app.get('/aboutus', getAboutUs);
 function showTvShowSearch(req, res) {
   res.status(200).render('tvshowSearch');
 }
-
 function showCocktailSearch(req, res) {
   res.status(200).render('cocktailSearch');
 }
-
-function showRecipeSearch(req, res) {
-  res.status(200).render('recipeSearch');
-}
-
-// function showSpotifySearch(req, res) {
-//   res.status(200).render('spotifySearch');
-// }
-
-
-function getAboutUs(req, res) {
-  res.status(200).render('aboutus');
-}
-
-
-
-
-// ---------------- COCKTAILS API ------------------------
-
-app.post('/faves', saveCocktail);
-app.get('/cocktailFavorites', showCocktailFaves);
-app.delete('/delete/:id', deleteCocktail);
 
 function cocktailHandler(req, res) {
   // console.log('req.qery...', req.query);
@@ -131,6 +158,7 @@ function cocktailHandler(req, res) {
     .then(value => {
       // console.log(value);
       let drinkSearch = value.body.drinks;
+      // console.log(drinkSearch);
       let cocktailIds = [];
       drinkSearch.forEach(drink => {
         let newdrink = new CocktailGenerator(drink);
@@ -151,7 +179,7 @@ function saveCocktail(req, res) {
   client.query(SQL, params)
     .then(data => {
       console.log(`added ${params[0]} to database`);
-    })
+    });
 }
 
 function showCocktailFaves(req, res) {
@@ -159,12 +187,12 @@ function showCocktailFaves(req, res) {
 
   client.query(SQL)
     .then(results => {
-      res.render('cocktailFavorites', { data: results.rows });
-    })
+      res.render('cocktailFavorites', {data: results.rows});
+    });
 }
 
-function deleteCocktail(req, res) {
-  console.log('req.params', req.params.id);
+function deleteCocktail (req, res) {
+  // console.log('req.params', req.params.=);
   let id = req.params.id;
   let SQL = 'DELETE FROM cocktails WHERE id=$1;';
   let value = [id];
@@ -172,10 +200,8 @@ function deleteCocktail(req, res) {
   client.query(SQL, value)
     .then(() => {
       res.status(200).redirect('/cocktailFavorites');
-    })
+    });
 }
-
-
 
 function CocktailGenerator(drink) {
   this.idDrink = drink.idDrink;
@@ -185,7 +211,8 @@ function CocktailGenerator(drink) {
 
 
 
-// ------------------- END COCKTAILS API ----------------------------
+
+// // ------------------- END COCKTAILS API ----------------------------
 
 
 
@@ -195,16 +222,21 @@ function CocktailGenerator(drink) {
 
 app.get('/recipeResults', findRecipe);
 app.post('/recipeFavorites', saveRecipe);
-app.delete('/delete/:recipe_id', deleteRecipe);
+app.delete('/deleteRecipe/:recipe_id', deleteRecipe);
 app.get('/recipeFavorites', getFavorites);
 
 
 
 
 
+// ------------------- FOOD API ----------------------------
 
 
 // Recipe Details using an id key
+
+function showRecipeSearch(req, res) {
+  res.status(200).render('recipeSearch');
+}
 
 function findRecipe(req, res) {
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
@@ -212,7 +244,7 @@ function findRecipe(req, res) {
     .query({
       apiKey: RECIPE_API_KEY,
       cuisine: req.query.keyword,
-      number: 10,
+      number: 50,
       instructionsRequired: true
     })
     .then(detailsIfo => {
@@ -243,20 +275,35 @@ function saveRecipe(req, res) {
 
 
 function deleteRecipe(req, res) {
-  console.log('req.params>>>>>>>>>>', req.params);
-  const SQL = 'SELECT * FROM recipes WHERE id=$1;';
-  const values = [req.params.id];
-  client.query(SQL, values)
-    .then(values => {
+  console.log('req.params>>>>>>>>>>', req.params.id);
+  const SQL = 'DELETE FROM recipes WHERE id=$1;';
+  let id = req.params.recipe_id;
+
+
+  let value=[id];
+  // const value = [req.params.id];
+  client.query(SQL, value)
+    .then(()=> {
       // console.log(">>>>>>>>>>", results.rows);
-      res.redirect('/');
+      res.redirect('/recipeFavorites');
       // render('recipeFavorites.ejs', { results: results.rows[0] });
-
     });
-
 }
-// =========rendered from database to favoritepage=======
 
+// function deleteRecipe(req, res) {
+//   console.log('req.params>>>>>>>>>>', req.params);
+//   const SQL = 'SELECT * FROM recipes WHERE id=$1;';
+//   const values = [req.params.id];
+//   client.query(SQL, values)
+//     .then(values => {
+//       // console.log(">>>>>>>>>>", results.rows);
+//       res.redirect('/recipeFavorites');
+//       // render('recipeFavorites.ejs', { results: results.rows[0] });
+
+//     });
+// }
+
+// =========rendered from database to favoritepage=======
 
 function getFavorites(req, res) {
   const SQL = 'SELECT * FROM recipes;';
@@ -270,20 +317,25 @@ function getFavorites(req, res) {
     });
 }
 
-
-
-
 function RecipeObject(data) {
   this.title = data.title;
   this.image = data.image;
   this.ingredients = data.ingredients;
   this.cuisines = data.cuisines;
-
 }
 
 
-// -------------------------- Spotify API ---------------------------- //
+// -------------SPOTIFY---------------
 
+// function showSpotifySearch(req, res) {
+//   res.status(200).render('spotifySearch');
+// }
+
+
+// async function homeHandler(req, res) {   // eslint-disable-line
+//   let playlist = await getMyData();
+//   console.log({playlist});
+// }
 
 // const fs = require('fs')
 // const SpotifyWebApi = require('spotify-web-api-node');
@@ -294,15 +346,17 @@ function RecipeObject(data) {
 
 // //GET MY PROFILE DATA
 // async function getMyData() {
-//   const me = await spotifyApi.getMe();
-//   // console.log(me.body);
-//   let data = await getUserPlaylists(me.body.id);
-//   return data;
+//     const me = await spotifyApi.getMe();
+//     // console.log(me.body);
+//     let data = await getUserPlaylists(me.body.id);
+//     return data;
 // }
 
 // //GET MY PLAYLISTS
 // async function getUserPlaylists(userName) {
 //   const data = await spotifyApi.getUserPlaylists(userName)
+
+//   console.log("---------------+++++++++++++++++++++++++")
 //   let playlists = []
 
 //   for (let playlist of data.body.items) {
@@ -342,37 +396,7 @@ function RecipeObject(data) {
 //   return tracks;
 // }
 
-// app.post('/spotifySearch', searchForPlaylist);
-// app.get('/spotifySearch', playlistHandler);
-
-// function searchForPlaylist(req, res) {
-//   let search = req.body.search;
-//   spotifyApi.clientCredentialsGrant()
-//     .then(data => {
-//       let playlists = data.body.playlists.items.map(playlist => new Playlist(playlist));
-//       res.status(200).render('spotifySearch', { playlists });
-//     })
-//     .catch(err => errorHandler(req, res, err));
-// }
-
-// function playlistHandler(req, res) {
-//   spotifyApi.clientCredentialsGrant()
-//     .then(data => {
-//       let playlists = data.body.playlists.items.map(playlist => new Playlist(playlist));
-//       res.status(200).render('spotifySearch', { playlists });
-//     })
-//     .catch(err => errorHandler(req, res, err));
-// }
-
-// function Playlist(obj) {
-//   this.description = obj.description;
-//   this.url = obj.external_urls.spotify;
-//   this.image = obj.images[0].url;
-//   this.name = obj.name;
-//   this.spotifyId = obj.id;
-// }
-
-// ------------------- Port Listener ------------------- //
+// // ------------------- Port Listener ------------------- //
 
 client.connect()
   .then(() => {
