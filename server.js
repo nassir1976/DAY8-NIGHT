@@ -55,6 +55,9 @@ app.delete('/deleteRecipe/:recipe_id', deleteRecipe);
 app.get('/recipeFavorites', getFavorites);
 
 app.get('/favorites', favoritesMovies);
+app.get('/allFavorites', renderFavoriteLinks);
+
+
 
 
 // FUNCTIONS FOR RENDERING HOMEPAGE & ABOUT US PAGE
@@ -69,6 +72,10 @@ function homeHandler (req, res){
 
 function getAboutUs(req, res) {
   res.status(200).render('aboutus');
+}
+
+function renderFavoriteLinks(req, res){
+  res.status(200).render('allFavorites');
 }
 
 // --------TV SHOW API ----------
@@ -131,20 +138,11 @@ function deleteTvShow (req, res) {
   });
 }
 
-
-
-
-
-// app.get('/', cocktailHandler);
-app.get('/cocktailResults', cocktailHandler);
-app.get('/cocktailSearch', showCocktailSearch);
-app.get('/tvshowSearch', showTvShowSearch);
-app.get('/recipeSearch', showRecipeSearch);
-app.get('/aboutus', getAboutUs);
-
 function showTvShowSearch(req, res) {
   res.status(200).render('tvshowSearch');
 }
+// --------------COCKTAILS API------------
+
 function showCocktailSearch(req, res) {
   res.status(200).render('cocktailSearch');
 }
@@ -187,6 +185,7 @@ function showCocktailFaves (req, res){
 
   client.query(SQL)
     .then(results => {
+      console.log('results...', results);
       res.render('cocktailFavorites', {data: results.rows});
     });
 }

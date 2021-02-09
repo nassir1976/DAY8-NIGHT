@@ -6,11 +6,17 @@
     <link rel="stylesheet" type="text/css" href="./styles/stylesTaylor.css">
   </head>
   <body>
+    <header>
+      <ul>
+       <li><a href="./aboutus"> ABOUTUS PAGE</a></li> 
+        <li><a href="/">SEARCH AGAIN</a></li>
+    </ul>
+    </header>
     <main>
-    
+  
       <% data.forEach(value => { %>
         <section id= "drinkFavoriteResults">
-        <h2 id="drinkName"><%= value.drinkName %></h2>
+        <h2 id="drinkName"><%= value.drinkname %></h2>
         <img id="img" src="<%= value.img %>"></img>
         <li hidden id="idDrink"><%= value.idDrink %></li>
 
@@ -23,7 +29,6 @@
     </section>
     <% }) %>
       
-    </section>
   </main>
 
   </body>
