@@ -25,6 +25,8 @@ main {
   /* width: 600px; */
   display: grid;
   grid-template-columns:  200px repeat(auto-fill, minmax(200px, 1fr));
+  
+  grid-gap: 0.5rem;
 }
 
 section {

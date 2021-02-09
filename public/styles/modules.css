@@ -1,7 +1,7 @@
 
 
 
-/* #tv-h1{
+#tv-h1{
   text-align: center;
   color: white;                            
   font-family: 'Lobster', cursive;
@@ -33,11 +33,7 @@
 #favo-btn:hover{
   color: red;
 }
-/* .tvshow{
-  height: 250px;
-  width: 250px;
-  margin-left:25px
-  } */
+ 
   #Database-tv1{
     /* width:230px;
     height: 40px; */
@@ -66,7 +62,7 @@
   #tvshow-title{
   font-family: 'Lobster', cursive;
   font-size: larger;
-  color: palegreen;
+  color:orange;
   
   margin-left: 25px;
   }
@@ -185,4 +181,4 @@
   /* background-image:url("../images/my favorite.jpg");  */
 
 
-} */
+} 
