@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method')); 
 
 //view engine
-app.set('view engine', 'ejs'); 
+app.set('view engine', 'ejs');
 
 // send a public facing directory  for our CSS
 app.use(express.static('./public'));
@@ -169,7 +169,7 @@ function cocktailHandler(req, res) {
     });
 }
 
-function saveCocktail (req, res){
+function saveCocktail(req, res) {
   // console.log('req..', req.body);
   const SQL = 'INSERT INTO cocktails (drinkName, img) VALUES ($1, $2) RETURNING *;';
   let params = [req.body.drinkName, req.body.img];
@@ -180,7 +180,7 @@ function saveCocktail (req, res){
     });
 }
 
-function showCocktailFaves (req, res){
+function showCocktailFaves(req, res) {
   let SQL = 'SELECT * FROM cocktails'
 
   client.query(SQL)
@@ -197,7 +197,7 @@ function deleteCocktail (req, res) {
   let value = [id];
 
   client.query(SQL, value)
-    .then(()=>{
+    .then(() => {
       res.status(200).redirect('/cocktailFavorites');
     });
 }
