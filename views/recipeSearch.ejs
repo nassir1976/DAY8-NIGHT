@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/reset.css">
+    <link rel="stylesheet" href="./styles/base.css" >
+    <link rel="stylesheet" href="./styles/layouts.css" >
+    <link rel="stylesheet" href="./styles/modules.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Karla&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
     <title>Recipe Search by Cuisine</title>
   </head>
-  <body>
+  <body id="search-body">
     <main>
-      <h2>Select What Type of Meal Do You Want to Eat</h2>
-      <form action="/recipeResults" method="GET">
-        <label for="ingredient"></label>
-        <input type="text" value="" name="keyword">
-        <input type="submit" value="Search for Meal">
+      <h2 id="select">Select What Type of Meal Do You Want to Eat</h2>
+      <form id="form" action="/recipeResults" method="GET">
+       
+        <label for="keyword">input your search here</label>
+        <input id="text" type="text" value="" name="keyword">
+        <input id="input" type="submit" value="Search for Meal">
       </form>
 
     </main>
