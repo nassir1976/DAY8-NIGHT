@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/reset.css">
+    <link rel="stylesheet" href="./styles/base.css" >
+    <link rel="stylesheet" href="./styles/layouts.css" >
+    <link rel="stylesheet" href="./styles/modules.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Karla&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
     <title>TV Show Search by Genre</title>
   </head>
-  <body>
+  <body id="searchpage">
     <main>
-      <h2>Select What Type of Show Do You Want to Watch</h2>
+      <h2 id="select">Select What Type of Show Do You Want to Watch</h2>
       
-      <form action="/shows" method="GET">
+      <form id="form" action="/shows" method="GET">
         <label for="keyword">input your search here</label>
-        <input type="text"  name="keyword">
-
-        <!-- <label for="drama">Drama</label>
-        <input type="radio" value="drama" name="keyword">
-
-        <label for="comedy">Comedy</label>
-        <input type="radio" value="comedy" name="keyword">
-
-        <label for="Action">Action</label>
-        <input type="radio" value="action" name="keyword"> -->
-
-        <input type="submit" value="Search for TV Show">
+        <input id="text" type="text"  name="keyword">
+        <input id="input" type="submit" value="Search for TV Show">
       </form>
 
     </main>

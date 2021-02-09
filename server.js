@@ -47,6 +47,7 @@ app.post('/faves', saveCocktail);
 app.get('/cocktailFavorites', showCocktailFaves);
 app.delete('/deleteCocktail/:id', deleteCocktail);
 
+
 app.get('/recipeSearch', showRecipeSearch);
 app.get('/recipeResults', findRecipe);
 app.post('/recipeFavorites', saveRecipe);
@@ -60,6 +61,11 @@ app.get('/favorites', favoritesMovies);
 function homeHandler (req, res){
     res.status(200).render('index');
 }
+// async function homeHandler(req, res) {   // eslint-disable-line
+//   let playlist = await getMyData();
+//   console.log({playlist});
+//   res.status(200).render('index');
+// }
 
 function getAboutUs(req, res) {
   res.status(200).render('aboutus');
@@ -125,8 +131,20 @@ function deleteTvShow (req, res) {
   });
 }
 
-// ---------------- COCKTAILS API ------------------------
 
+
+
+
+// app.get('/', cocktailHandler);
+app.get('/cocktailResults', cocktailHandler);
+app.get('/cocktailSearch', showCocktailSearch);
+app.get('/tvshowSearch', showTvShowSearch);
+app.get('/recipeSearch', showRecipeSearch);
+app.get('/aboutus', getAboutUs);
+
+function showTvShowSearch(req, res) {
+  res.status(200).render('tvshowSearch');
+}
 function showCocktailSearch(req, res) {
   res.status(200).render('cocktailSearch');
 }
@@ -161,7 +179,7 @@ function saveCocktail (req, res){
   client.query(SQL, params)
     .then(data => {
       console.log(`added ${params[0]} to database`);
-    })
+    });
 }
 
 function showCocktailFaves (req, res){
@@ -170,7 +188,7 @@ function showCocktailFaves (req, res){
   client.query(SQL)
     .then(results => {
       res.render('cocktailFavorites', {data: results.rows});
-    })
+    });
 }
 
 function deleteCocktail (req, res) {
@@ -182,7 +200,7 @@ function deleteCocktail (req, res) {
   client.query(SQL, value)
     .then(()=>{
       res.status(200).redirect('/cocktailFavorites');
-    })
+    });
 }
 
 function CocktailGenerator(drink) {
@@ -191,7 +209,28 @@ function CocktailGenerator(drink) {
   this.img = drink.strDrinkThumb;
 }
 
+
+
+
+// // ------------------- END COCKTAILS API ----------------------------
+
+
+
+
+
+
+
+app.get('/recipeResults', findRecipe);
+app.post('/recipeFavorites', saveRecipe);
+app.delete('/deleteRecipe/:recipe_id', deleteRecipe);
+app.get('/recipeFavorites', getFavorites);
+
+
+
+
+
 // ------------------- FOOD API ----------------------------
+
 
 // Recipe Details using an id key
 
@@ -205,7 +244,7 @@ function findRecipe(req, res) {
     .query({
       apiKey: RECIPE_API_KEY,
       cuisine: req.query.keyword,
-      number: 10,
+      number: 50,
       instructionsRequired: true
     })
     .then(detailsIfo => {
@@ -234,10 +273,13 @@ function saveRecipe(req, res) {
 }
 
 
+
 function deleteRecipe(req, res) {
   console.log('req.params>>>>>>>>>>', req.params.id);
   const SQL = 'DELETE FROM recipes WHERE id=$1;';
   let id = req.params.recipe_id;
+
+
   let value=[id];
   // const value = [req.params.id];
   client.query(SQL, value)
@@ -288,6 +330,7 @@ function RecipeObject(data) {
 // function showSpotifySearch(req, res) {
 //   res.status(200).render('spotifySearch');
 // }
+
 
 // async function homeHandler(req, res) {   // eslint-disable-line
 //   let playlist = await getMyData();
@@ -353,7 +396,7 @@ function RecipeObject(data) {
 //   return tracks;
 // }
 
-// ------------------- Port Listener ------------------- //
+// // ------------------- Port Listener ------------------- //
 
 client.connect()
   .then(() => {

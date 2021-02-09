@@ -1,0 +1,193 @@
+
+
+
+#tv-h1{
+  text-align: center;
+  color: white;                            
+  font-family: 'Lobster', cursive;
+  height: 50px; 
+  background-color: black; 
+  border: black solid ; 
+  font-size: 40px;
+  width: auto; 
+  margin-bottom: 20px;
+  text-align: center;
+  
+}
+#favo-btn{
+  width:230px;
+  height: 40px;
+  border-radius: 6px;
+  border: 0px;
+  margin-bottom: 20px;
+  font-size: large;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-family: 'Lobster', cursive;
+  margin-left: 20px;
+  margin-left: 650px;
+
+}
+#favo-btn:hover{
+  color: red;
+}
+.tvshow{
+  height: 250px;
+  width: 250px;
+  margin-left:25px
+  }
+  #Database-tv{
+    width:230px;
+    height: 40px;
+    border-radius: 6px;
+    border: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: large;
+    font-weight: bold;
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-family: 'Lobster', cursive;
+    margin-left: 20px;
+     
+  }
+    #tvshow-summary{
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 4; /* number of lines to show */
+      -webkit-box-orient: horizontal;
+    
+      
+  } 
+  #tvshow-title{
+  font-family: 'Lobster', cursive;
+  font-size: larger;
+  color: palegreen;
+  
+  margin-left: 25px;
+  }
+ 
+
+
+ .tvshow{
+  
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: .1rem;
+
+} 
+
+#delete-btn{
+  width:250px;
+  height: 40px;
+  border-radius: 6px;
+  border: 0px;
+  margin-bottom: 20px;
+  font-size: large;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-family: 'Lobster', cursive;
+  margin-left: 25px;
+  margin-top: 15px;
+  
+
+}
+#tvshowsearch-btn{
+  width:230px;
+  height: 30px;
+  border-radius: 6px;
+  border: 0px;
+  margin: bottom 40px;
+  font-size: large;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-family: 'Lobster', cursive;
+  /* margin-left: 650px; */
+  float: right;
+  margin-right: 20px;
+
+}
+#tvshowsearch-btn:hover{
+  color: red;
+} 
+#select{
+  text-align: center;
+  color:black;                            
+  font-family: 'Lobster', cursive;
+  margin-top: 200px; 
+  font-size: 35px;
+  width: auto; 
+  border-radius: 25px 25px ; 
+
+}
+
+
+#form{
+
+  text-align: center;
+  color:yellow;                            
+  font-family: 'Lobster', cursive;
+  /* background-color:white ; */
+  
+ 
+  font-size: 45px;
+  width: auto; 
+  border-radius: 25px 25px ; 
+  
+
+}
+#searchpage{
+  background-color: cornflowerblue;  
+  background-image:url("../images/tv.webp"); 
+
+}
+#input{
+  font-size:15px;
+  font-family: 'Lobster', cursive;
+  
+
+}
+#text{
+  height: 25px;
+  width: 265px;
+  border-radius: 25px 25px 25px 25px; 
+  border: black solid
+  
+}
+
+#home-btn{
+  width:230px;
+  height: 40px;
+  border-radius: 6px;
+  border: 0px;
+  margin: bottom 40px;
+  font-size: large;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-family: 'Lobster', cursive;
+  margin-left: 20px; 
+  
+} 
+#home-btn:hover{
+  color: red;
+}
+#resultpage{
+  background-color: cornflowerblue; 
+
+}
+#favorite-page{
+  background-color: cornflowerblue; 
+  background-image:url("../images/my favorite.jpg"); 
+
+
+}

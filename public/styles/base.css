@@ -91,7 +91,7 @@ img{
   width: 300px
 }
 
-#recipe-title{
+ #recipe-title{
   font-size:x-large;
   color: green;
   font-family: 'Lobster', cursive;
@@ -107,25 +107,11 @@ img{
   font-size: 40px;
   width: auto; 
   margin-bottom: 20px;
-}
-
-.recipe-image{
-  height: 250px;
-  width: 250px;
-  margin-left:25px
+} 
 
 
-}
-.result-container{
-  display:flex;
-  justify-content:center;
-  flex-direction: column;
-  flex-wrap: wrap;
-  width: 200px;
- 
-}
 
-#Database-btn{
+ #Database-btn{
   width:230px;
   height: 40px;
   border-radius: 6px;
@@ -137,9 +123,11 @@ img{
   color: white;
   text-align: center;
   font-family: 'Lobster', cursive;
-  margin-left: 20px;
+   
+  
+  
 
-}
+}   
 
 #favo-btn{
   width:230px;
@@ -196,4 +184,8 @@ img{
 }
 #recipesearch-btn:hover{
   color: red;
-}
+} 
+
+
+
+

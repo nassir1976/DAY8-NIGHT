@@ -22,6 +22,7 @@
 </header>
 <a id="favo-btn" href='/recipeFavorites'> FAVORITES PAGE</a>
 
+
 <main>
  
 <%recipe.forEach(results=>{%>
@@ -35,6 +36,7 @@
         <input type="hidden" name="cusines" value="<%= results.cusines%>">
         <button id="Database-btn" type="submit">add to Database</button>
         </form>
+
     </section>
         
     <% }) %>
