@@ -111,18 +111,23 @@ img{
 
 
 
- #Database-btn{
-  width:230px;
-  height: 40px;
+#Database-btn{
+  /* width:250px;
+  height: 40px; */
   border-radius: 6px;
   border: 0px;
-  margin-bottom: 20px;
+  
   font-size: large;
   font-weight: bold;
   background-color: black;
   color: white;
   text-align: center;
   font-family: 'Lobster', cursive;
+  margin-left: 25px;
+  margin-top:20px;
+  
+  
+  
    
 }   
 
@@ -138,18 +143,19 @@ img{
   color: white;
   text-align: center;
   font-family: 'Lobster', cursive;
-  margin-left: 20px;
-  margin-left: 650px;
+  
+  margin-left: 900px;
+  
 }
 #favo-btn:hover{
   color: red;
 }
 #delete-btn{
-  width:250px;
-  height: 40px;
+  /* width:250px;
+  height: 40px; */
   border-radius: 6px;
   border: 0px;
-  margin-bottom: 20px;
+  
   font-size: large;
   font-weight: bold;
   background-color: black;
@@ -157,7 +163,7 @@ img{
   text-align: center;
   font-family: 'Lobster', cursive;
   margin-left: 25px;
-  margin-top: 15px;
+  margin-bottom: 10px;
 }
 
 #recipesearch-btn{
