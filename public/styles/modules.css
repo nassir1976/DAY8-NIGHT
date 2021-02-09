@@ -33,14 +33,14 @@
 #favo-btn:hover{
   color: red;
 }
-.tvshow{
+/* .tvshow{
   height: 250px;
   width: 250px;
   margin-left:25px
-  }
-  #Database-tv{
-    width:230px;
-    height: 40px;
+  } */
+  #Database-tv1{
+    /* width:230px;
+    height: 40px; */
     border-radius: 6px;
     border: 0px;
     margin-top: 10px;
@@ -73,17 +73,11 @@
  
 
 
- .tvshow{
-  
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: .1rem;
 
-} 
 
-#delete-btn{
-  width:250px;
-  height: 40px;
+#delete-btn1{
+  /* width:250px;
+  height: 40px; */
   border-radius: 6px;
   border: 0px;
   margin-bottom: 20px;
@@ -93,14 +87,15 @@
   color: white;
   text-align: center;
   font-family: 'Lobster', cursive;
-  margin-left: 25px;
+  margin-left:40px;
+ 
   margin-top: 15px;
   
 
 }
 #tvshowsearch-btn{
-  width:230px;
-  height: 30px;
+  /* width:230px;
+  height: 30px; */
   border-radius: 6px;
   border: 0px;
   margin: bottom 40px;
@@ -187,7 +182,7 @@
 }
 #favorite-page{
   background-color: cornflowerblue; 
-  background-image:url("../images/my favorite.jpg"); 
+  /* background-image:url("../images/my favorite.jpg");  */
 
 
 }

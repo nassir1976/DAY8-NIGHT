@@ -59,7 +59,7 @@ app.get('/favorites', favoritesMovies);
 
 // FUNCTIONS FOR RENDERING HOMEPAGE & ABOUT US PAGE
 function homeHandler (req, res){
-    res.status(200).render('index');
+  res.status(200).render('index');
 }
 // async function homeHandler(req, res) {   // eslint-disable-line
 //   let playlist = await getMyData();
@@ -249,9 +249,9 @@ function findRecipe(req, res) {
     })
     .then(detailsIfo => {
       // console.log('=========', detailsIfo.body);
-
+      let key  = req.query.keyword
       const recipeObj = detailsIfo.body.results;
-      const recipeData = recipeObj.map(detailsIfo => new RecipeObject(detailsIfo));
+      const recipeData = recipeObj.map(detailsIfo => new RecipeObject(detailsIfo,key));
       // res.status(200).send(recipeData);
       res.render('./recipeResults', { recipe: recipeData });
 
@@ -266,8 +266,7 @@ function saveRecipe(req, res) {
   const values = [req.body.title, req.body.image, req.body.ingredients, req.body.cuisines];
   client.query(SQL, values)
     .then(values => {
-      res.redirect('/');
-      // res.render('recipeFavorites.ejs', { results: values.rows[0] });
+      res.redirect(`/recipeResults?keyword=${req.body.keyword}`);
     }).catch(error => console.log(error));
 
 }
@@ -278,30 +277,13 @@ function deleteRecipe(req, res) {
   console.log('req.params>>>>>>>>>>', req.params.id);
   const SQL = 'DELETE FROM recipes WHERE id=$1;';
   let id = req.params.recipe_id;
-
-
   let value=[id];
-  // const value = [req.params.id];
   client.query(SQL, value)
     .then(()=> {
-      // console.log(">>>>>>>>>>", results.rows);
       res.redirect('/recipeFavorites');
-      // render('recipeFavorites.ejs', { results: results.rows[0] });
     });
 }
 
-// function deleteRecipe(req, res) {
-//   console.log('req.params>>>>>>>>>>', req.params);
-//   const SQL = 'SELECT * FROM recipes WHERE id=$1;';
-//   const values = [req.params.id];
-//   client.query(SQL, values)
-//     .then(values => {
-//       // console.log(">>>>>>>>>>", results.rows);
-//       res.redirect('/recipeFavorites');
-//       // render('recipeFavorites.ejs', { results: results.rows[0] });
-
-//     });
-// }
 
 // =========rendered from database to favoritepage=======
 
@@ -317,7 +299,8 @@ function getFavorites(req, res) {
     });
 }
 
-function RecipeObject(data) {
+function RecipeObject(data,pot) {
+  this.keyword= pot;
   this.title = data.title;
   this.image = data.image;
   this.ingredients = data.ingredients;
