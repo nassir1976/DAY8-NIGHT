@@ -16,3 +16,25 @@ img {
   width: 200px;
   height: 200px;
 }
+
+body {
+  background-color: aliceblue;
+}
+
+main {
+  /* width: 600px; */
+  display: grid;
+  grid-template-columns:  200px repeat(auto-fill, minmax(200px, 1fr));
+}
+
+section {
+  display: block;
+  border: 1px solid black;
+}
+
+
+img{
+  width: 100%
+}
+
+

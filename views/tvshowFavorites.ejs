@@ -7,8 +7,7 @@
   <link rel="stylesheet" href="./styles/base.css" >
   <link rel="stylesheet" href="./styles/layouts.css" >
   <link rel="stylesheet" href="./styles/modules.css"> 
-  
-
+   <link rel="stylesheet" type="text/css" href="./styles/stylesTaylor.css">
   <title>final project</title>
 </head>
 <body id="favorite-page">
@@ -20,17 +19,21 @@
    <li><a id="home-btn" href='/'> Go to Home Page </a></li>
     </ul>
     <ul class="tv-show">
+
+ <main>
+     
         <%data.forEach(show=> {%>
-            <li>
+            <section>
+
             <img class="tvshow" src="<%=show.img%>" alt="<%=show.title%>">
             <h3 id="tvshow-title"><%=show.name%></h3>
             <div id="tvshow-summary"><%-show.summary%></div>
             <form action="/delete/<%=show.id%>?_method=DELETE" method="POST">
             <button id="delete-btn" type="submit">Delete Show</button>
             </form>
-        </li>
+        </section>
             <%})%>
-    </ul>
 
+</main>
 </body>
 </html>

@@ -12,51 +12,54 @@ const { log } = require('console');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 
-
-// const { log } = require('console');
-// const { render } = require('ejs');
-
-
-
-
 // application setup
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
 
-app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride('_method')); // allow to PUT and DELETE
-
-app.use(methodOverride('_method'));
-
-
 //application configurations (middleware)  //express middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method')); 
 
 //view engine
 app.set('view engine', 'ejs'); 
 
 // send a public facing directory  for our CSS
 app.use(express.static('./public'));
-app.use(methodOverride('_method'));
 
 // Database conection
-const client = new pg.Client(process.env.DATABASE_URL);// TAKE IN PATH OF DATABASE SERVER
-
-app.use(express.urlencoded({ extended: true }));
-
+const client = new pg.Client(process.env.DATABASE_URL);// 
 
 const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
-// create a default route
-app.get('/shows', tvShowHandler);
+// Routes
 app.get('/', homeHandler);
+app.get('/aboutus', getAboutUs);
+
+app.get('/tvshowSearch', showTvShowSearch);
+app.get('/shows', tvShowHandler);
 app.post('/saved', savedMovies);
-app.get('/favorites', favoritesMovies);
 app.delete('/delete/:id', deleteTvShow);
 
+app.get('/cocktailSearch', showCocktailSearch);
+app.get('/cocktailResults', cocktailHandler);
+app.post('/faves', saveCocktail);
+app.get('/cocktailFavorites', showCocktailFaves);
+app.delete('/deleteCocktail/:id', deleteCocktail);
 
+
+app.get('/recipeSearch', showRecipeSearch);
+app.get('/recipeResults', findRecipe);
+app.post('/recipeFavorites', saveRecipe);
+app.delete('/deleteRecipe/:recipe_id', deleteRecipe);
+app.get('/recipeFavorites', getFavorites);
+
+app.get('/favorites', favoritesMovies);
+
+
+// FUNCTIONS FOR RENDERING HOMEPAGE & ABOUT US PAGE
 function homeHandler (req, res){
-  res.status(200).render('index');
+    res.status(200).render('index');
 }
 // async function homeHandler(req, res) {   // eslint-disable-line
 //   let playlist = await getMyData();
@@ -64,7 +67,14 @@ function homeHandler (req, res){
 //   res.status(200).render('index');
 // }
 
+function getAboutUs(req, res) {
+  res.status(200).render('aboutus');
+}
 
+// --------TV SHOW API ----------
+function showTvShowSearch(req, res) {
+  res.status(200).render('tvshowSearch');
+}
 
 function tvShowHandler(req, res) {
   const searchterm = req.query.keyword;
@@ -124,12 +134,6 @@ function deleteTvShow (req, res) {
 
 
 
-// app.use('*', (req, res) => {
-//   res.status(404).send('Something is wrong');
-// });
-
-
-
 
 // app.get('/', cocktailHandler);
 app.get('/cocktailResults', cocktailHandler);
@@ -141,32 +145,9 @@ app.get('/aboutus', getAboutUs);
 function showTvShowSearch(req, res) {
   res.status(200).render('tvshowSearch');
 }
-
 function showCocktailSearch(req, res) {
   res.status(200).render('cocktailSearch');
 }
-
-function showRecipeSearch(req, res) {
-  res.status(200).render('recipeSearch');
-}
-
-// function showSpotifySearch(req, res) {
-//   res.status(200).render('spotifySearch');
-// }
-
-
-function getAboutUs(req, res) {
-  res.status(200).render('aboutus');
-}
-
-
-
-
-// ---------------- COCKTAILS API ------------------------
-
-app.post('/faves', saveCocktail);
-app.get('/cocktailFavorites', showCocktailFaves);
-app.delete('/delete/:id', deleteCocktail);
 
 function cocktailHandler(req, res) {
   // console.log('req.qery...', req.query);
@@ -177,6 +158,7 @@ function cocktailHandler(req, res) {
     .then(value => {
       // console.log(value);
       let drinkSearch = value.body.drinks;
+      // console.log(drinkSearch);
       let cocktailIds = [];
       drinkSearch.forEach(drink => {
         let newdrink = new CocktailGenerator(drink);
@@ -210,7 +192,7 @@ function showCocktailFaves (req, res){
 }
 
 function deleteCocktail (req, res) {
-  console.log('req.params', req.params.id);
+  // console.log('req.params', req.params.=);
   let id = req.params.id;
   let SQL = 'DELETE FROM cocktails WHERE id=$1;';
   let value = [id];
@@ -247,9 +229,14 @@ app.get('/recipeFavorites', getFavorites);
 
 
 
+// ------------------- FOOD API ----------------------------
 
 
 // Recipe Details using an id key
+
+function showRecipeSearch(req, res) {
+  res.status(200).render('recipeSearch');
+}
 
 function findRecipe(req, res) {
   const url = 'https://api.spoonacular.com/recipes/complexSearch';
@@ -287,24 +274,12 @@ function saveRecipe(req, res) {
 
 
 
-// function deleteRecipe(req, res) {
-//   console.log('req.params>>>>>>>>>>', req.params);
-//   const SQL = 'SELECT * FROM recipes WHERE id=$1;';
-//   const values = [req.params.id];
-//   client.query(SQL, values)
-//     .then(values => {
-//       // console.log(">>>>>>>>>>", results.rows);
-//       res.redirect('/');
-//       // render('recipeFavorites.ejs', { results: results.rows[0] });
-
-//     });
-
-// }
 function deleteRecipe(req, res) {
   console.log('req.params>>>>>>>>>>', req.params.id);
   const SQL = 'DELETE FROM recipes WHERE id=$1;';
   let id = req.params.recipe_id;
-  console.log('line308',id);
+
+
   let value=[id];
   // const value = [req.params.id];
   client.query(SQL, value)
@@ -312,12 +287,23 @@ function deleteRecipe(req, res) {
       // console.log(">>>>>>>>>>", results.rows);
       res.redirect('/recipeFavorites');
       // render('recipeFavorites.ejs', { results: results.rows[0] });
-
     });
-
 }
-// =========rendered from database to favoritepage=======
 
+// function deleteRecipe(req, res) {
+//   console.log('req.params>>>>>>>>>>', req.params);
+//   const SQL = 'SELECT * FROM recipes WHERE id=$1;';
+//   const values = [req.params.id];
+//   client.query(SQL, values)
+//     .then(values => {
+//       // console.log(">>>>>>>>>>", results.rows);
+//       res.redirect('/recipeFavorites');
+//       // render('recipeFavorites.ejs', { results: results.rows[0] });
+
+//     });
+// }
+
+// =========rendered from database to favoritepage=======
 
 function getFavorites(req, res) {
   const SQL = 'SELECT * FROM recipes;';
@@ -331,19 +317,25 @@ function getFavorites(req, res) {
     });
 }
 
-
-
-
 function RecipeObject(data) {
   this.title = data.title;
   this.image = data.image;
   this.ingredients = data.ingredients;
   this.cuisines = data.cuisines;
-
 }
 
 
+// -------------SPOTIFY---------------
 
+// function showSpotifySearch(req, res) {
+//   res.status(200).render('spotifySearch');
+// }
+
+
+// async function homeHandler(req, res) {   // eslint-disable-line
+//   let playlist = await getMyData();
+//   console.log({playlist});
+// }
 
 // const fs = require('fs')
 // const SpotifyWebApi = require('spotify-web-api-node');

@@ -2,13 +2,16 @@
 <html lang="en">
 
 <head>
+
     <title>final project</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./styles/reset.css">
     <link rel="stylesheet" href="./styles/base.css" >
     <link rel="stylesheet" href="./styles/layouts.css" >
     <link rel="stylesheet" href="./styles/modules.css"> 
+    <link rel="stylesheet" type="text/css" href="./styles/stylesTaylor.css">
     
+
 </head>
 
 <nav>
@@ -20,9 +23,11 @@
         <h1 id=tv-h1>TV-SHOW LIST </h1>
         <a id="favo-btn" href="/favorites">FAVORITES TV-SHOW</a>
     </header>
-    <section id= "main-container"></section>
-    <ul class="tv-show">
+    
+    <main>
+        
         <%values.forEach(show=> {%>
+            <section id= "main-container">
             <img class="tvshow" src="<%=show.image%>" alt="<%=show.title%>">
             <h3 id="tvshow-title"><%=show.name%></h3>
             <!-- <div id="tvshow-summary"><%-show.summary%></div> -->
@@ -33,11 +38,10 @@
                 <input type="hidden" name="tvshow_name" value="<%=show.name%>">
                 <!-- <input id="summary" type="hidden" name="summary" value="<%=show.summary%>"> -->
                 <input type="hidden" name="searchterm" value="<%=searchterm%>">
-
-
             </form>
+        </section>
             <%})%>
-    </ul>
+</main>
 </body>
 
 </html>
