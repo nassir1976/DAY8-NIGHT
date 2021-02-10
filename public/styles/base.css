@@ -8,7 +8,9 @@ h1{
 
 #about1 {    
   text-align: center;
-  color: white;                            
+  color: red;  
+  background-image:url("../images/foodsearch.jpg"); 
+                          
   font-family: 'Lobster', cursive;
   height: 100px; 
   background-color: black; 
@@ -34,9 +36,10 @@ h1{
   
 }
 #aboutmebody{
-  background-color: rgb(210, 240, 245);
+  background-color:peachpuff;
   width: 80%;
   margin: auto
+  
 }
 #description {
   font-family: 'Roboto Condensed', sans-serif;
@@ -79,6 +82,8 @@ background-color: black;
   text-align: center;
   background-color: white;  
   font-size:20px;
+  /* background-image:url("../images/book.jpg");  */
+
 }
 
 #tayler{

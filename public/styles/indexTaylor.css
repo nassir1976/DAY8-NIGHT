@@ -78,5 +78,24 @@ span {
   transition: background .5s;
 }
 
+#nav{
+  
+ 
+  font-weight: bold;
+ 
+  
+  text-align: center;
+  font-family: 'Lobster', cursive;
+  
+ 
+
+} 
+a:link {
+  text-decoration: none;
+  font-family:'Courier New', Courier, monospace
+  
+
+}
+
 
 
