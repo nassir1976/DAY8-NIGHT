@@ -1,6 +1,9 @@
 body {
-  background: url(../images/aaron-burden-V6nzK_QYN4g-unsplash.jpg);
-  
+  background: url(../images/pineboard.jpg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: auto;
+  height:80%
 }
 
 header{

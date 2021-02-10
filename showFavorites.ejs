@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('./partials/head.ejs') %>
+  <title>Favorites</title>
+</head>
+
+<body>
+  <header>
+
+    <div id ="header"><h1>DAY8 NIGHT</h1></div>
+ 
+  
+  <div class="navbar">
+    <div class = "nav">
+    <div id="home"><a href="/"><img src=""></a></div>
+    <div id="about"><a href="/aboutus"><img src=""></a></div>
+    <div id="fav"><a href="/favorites"><img src=""></a></div>
+    <div id="cocktail-nav"><a href="./views/cocktailFavorites.ejs"><img src=""></a></div>
+    <div id="recipe-nav"><a href="./views/recipeFavorites.ejs"><img src=""></a></div>
+    <div id="tvshow-nav"><a href="./views/tvshowFavorites.ejs"><img src=""></a></div>
+  </div>
+
+
+  
+
+  
+ 
+</header>
+
+  <div id = "favHeader"><h1>FAVORITES</h1> </div>
+  
+
+  
+  <main>
+
+    <section class = "fav-boxes">
+    
+
+    <%- include('../layout/header') %>
+
+      <!-- Cocktail Partial -->
+      <div id="fav-b" class="fav-outer">
+        <div class="fav-inner">
+          <a href="/trivia" class="favLink">
+            <div class="favTitle">Trivia</div>
+          </a>
+          <% trivia.forEach(triviaquestions => { %>
+          <%- include('../partials/savedtrivia', { triviaquestions }) %>
+          <% }) %>
+        </div>
+      </div>
+
+      <!-- Recipe Partial -->
+      <div id="fav-c" class="fav-outer">
+        <div class="fav-inner">
+          <a href="/boardgames" class="favLink">
+            <div class="favTitle">Board Games</div>
+          </a>
+          <% boardgames.forEach(game => { %>
+          <%- include('../partials/favgames', { game }) %>
+          <% }) %>
+        </div>
+      </div>
+
+      <!-- Tvshow Partial -->
+      <div id="fav-d" class="fav-outer">
+        <div class="fav-inner">
+          <a href="/playlist" class="favLink">
+            <div class="favTitle">Playlist</div>
+          </a>
+          <%- include('../partials/playlist', { playlist }) %>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- <footer>
+    <div id ="footer"></div>
+  </footer> -->
+</body>
+
+</html>
