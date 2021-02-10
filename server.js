@@ -177,6 +177,7 @@ function saveCocktail(req, res) {
   client.query(SQL, params)
     .then(data => {
       console.log(`added ${params[0]} to database`);
+      res.redirect('/cocktailFavorites');
     });
 }
 
