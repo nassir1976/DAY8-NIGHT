@@ -28,7 +28,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('./public'));
 
 // Database conection
-const client = new pg.Client(process.env.DATABASE_URL+'?sslmode=require');// 
+const client = new pg.Client(process.env.DATABASE_URL);// 
 
 const RECIPE_API_KEY = process.env.RECIPE_API_KEY;
 
