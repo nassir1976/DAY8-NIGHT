@@ -6,19 +6,21 @@
     <link rel="stylesheet" type="text/css" href="./styles/stylesTaylor.css">
     
   </head>
-  <body>
+  <body id="cock-body" >
 
-    <header>
-      <a href="/cocktailFavorites">Saved Cocktails</a>
+    <header id="header">
+      <a href="/cocktailFavorites">SAVED COCKTAILS</a>
 
     </header>
 
     <main>
       <header>
+      <nav>
         <ul>
          <li><a href="./aboutus"> ABOUTUS PAGE</a></li> 
           <li><a href="./allFavorites">FAVORITES PAGE</a></li>
       </ul>
+      </nav>
       </header>
       
       <% data.forEach(value => { %>
@@ -33,7 +35,7 @@
           <input type="hidden" name="drinkName" value="<%= value.drinkName %>">
           <input type="hidden" name="img" value="<%= value.img %>">
           <input type="hidden" name="idDrink" value="<%= value.idDrink %>">
-          <button type="submit">Favorite this Drink</button>
+          <button id="cock-fav-btn" type="submit">Favorite this Drink</button>
           </form>
       </section>
      

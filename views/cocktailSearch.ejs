@@ -1,25 +1,35 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/reset.css">
+    <link rel="stylesheet" href="./styles/base.css" >
+    <link rel="stylesheet" href="./styles/layouts.css" >
+    <link rel="stylesheet" href="./styles/modules.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Karla&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
     <title>Cocktail Search by Drink Type</title>
   </head>
-  <body>
+  <body id="cock-body">
     <main>
-      <h2>Select What Type of Drink You Want</h2>
+      <h2 id="select-cock">Select What Type of Drink You Want</h2>
       <form action="/cocktailResults" method="GET">
-        <label for="vodka">Vodka</label>
+        <label id="radio" for="vodka">Vodka</label>
         <input type="radio" value="vodka" name="keyword">
 
-        <label for="scotch">Scotch</label>
+        <label id ="radio" for="scotch">Scotch</label>
         <input type="radio" value="scotch" name="keyword">
 
-        <label for="tequila">Tequila</label>
+        <label  id ="radio" for="tequila">Tequila</label>
         <input type="radio" value="tequila" name="keyword">
 
-        <label for="gin">Gin</label>
+        <label  id ="radio" for="gin">Gin</label>
         <input type="radio" value="gin" name="keyword">
 
-        <input type="submit" value="Search for Drinks">
+        <input id="input" type="submit" value="Search for Drinks">
       </form>
 
     </main>

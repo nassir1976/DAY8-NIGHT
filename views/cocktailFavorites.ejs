@@ -5,12 +5,14 @@
     <link rel="stylesheet" type="text/css" href="./styles/reset.css">
     <link rel="stylesheet" type="text/css" href="./styles/stylesTaylor.css">
   </head>
-  <body>
-    <header>
+  <body id="cock-body">
+    <header id="header" >
+      <nav>
       <ul>
        <li><a href="./aboutus"> ABOUTUS PAGE</a></li> 
         <li><a href="/">SEARCH AGAIN</a></li>
     </ul>
+    </nav>
     </header>
     <main>
   
@@ -24,7 +26,7 @@
         <input type="hidden" name="img" value="<%= value.img %>">
         <input type="hidden" name="idDrink" value="<%= value.idDrink %>">
         <form action="/deleteCocktail/<%= value.id%>?_method=DELETE" method="POST">
-        <button type="submit">DELETE</button>
+        <button id="delete-btn" type="submit">DELETE</button>
       </form>
     </section>
     <% }) %>

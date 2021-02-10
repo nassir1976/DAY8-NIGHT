@@ -182,3 +182,33 @@
 
 
 } 
+
+#select-cock{
+  text-align: center;
+  color:white;                            
+  font-family: 'Lobster', cursive;
+  margin-top: 150px; 
+  font-size: 35px;
+  width: auto; 
+  border-radius: 25px 25px ;
+  margin-bottom: 40px;
+
+
+}
+#radio{
+  text-align: center;
+  color:white;                            
+  font-family: 'Lobster', cursive;
+  margin-top: 200px; 
+  font-size: 35px;
+  width: auto; 
+  border-radius: 25px 25px ; 
+  margin-left:100px;
+
+
+}
+
+#cock-body{
+  background-image:url("../images/cocktail.webp")
+
+}
