@@ -1,9 +1,8 @@
 body {
-  background: url(../images/pineboard.jpg);
+  background: url(../images/cloudtexture.jpg);
   background-repeat: no-repeat;
-  background-size: contain;
   width: auto;
-  height:80%
+  height: 50%;
 }
 
 header{
